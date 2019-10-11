@@ -47,7 +47,7 @@ void Superviser::next() {
 };
 
 bool Superviser::over() {
-	return (sent_ < N_)?false:true;
+	return (created_ < N_)?false:true;
 };
 
 void Superviser::stats() { //REDO

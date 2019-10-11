@@ -28,6 +28,10 @@ public:
 	int  	fx();
 	void 	set(int i);
 	void 	free(int i);
+	void 	work();
+	
+	int 	capacity();
+	bool 	done();
 };
 
 

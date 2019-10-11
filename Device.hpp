@@ -19,7 +19,7 @@ private:
 public:
 	Device(Superviser * superviser, int N);
 	~Device();
-	
+
 	void 	init(Father * obj) 	override;
 	void 	send(int i) 		override;
 	void 	get(int i) 			override;
@@ -29,13 +29,15 @@ public:
 	void 	dec();
 	void 	find();
 
-	int 	free();
-
 	void 	work();
 	void 	collect();
 	void 	finish();
+	void 	free(int i);
 	
-	int fx();
+	int 	fx();
+
+	int 	capacity();
+	bool 	done();
 	
 
 	

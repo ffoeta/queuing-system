@@ -15,18 +15,15 @@ Buffer::~Buffer(){
 	delete array_;
 }
 
-void Buffer::init(Father * obj) {
-	this->device = obj;
-};
+void Buffer::init(Father * obj) {};
 
 void Buffer::send(int i) {};
-
 
 void Buffer::get(int i) {
 	
 	this->find();
 
-	if (array_[current_] > 0) {
+	if (array_[current_] >= 0) {
 		dec();
 		this->superviser->drop(array_[current_]);
 
@@ -46,6 +43,17 @@ void Buffer::get(int i) {
 
 int Buffer::ask() {
 	return this->select();
+};
+
+int Buffer::capacity(){
+	int count = 0;
+	for (int i = 0; i < N_; ++i)
+	{
+		if (array_[i] == -1) {
+			count++;
+		}
+	}
+	return count;
 };
 
 void Buffer::inc() {
@@ -114,6 +122,11 @@ void Buffer::free(int i) {
 	array_[i] = -1;
 }
 
+bool Buffer::done() {
+	if (this->capacity() == N_)
+		return true;
+	return false;
+};
 
 
 

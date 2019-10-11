@@ -7,11 +7,10 @@
 class Buffer : public Father {
 private:
 	int 	N_;
-	int * 	array_;
+	int  * 	array_;
 	int 	current_;
 	bool 	doPrint_;
 
-	Father * 		device;
 	Superviser * 	superviser;
 public:
 	Buffer(Superviser * superviser, int N);
@@ -22,11 +21,16 @@ public:
 	void 	get(int i) 			override;
 	int 	ask() 				override;
 
+
+
 	void 	inc();
 	void 	dec();
 	void 	find();
 	int 	select();
 	void	free(int i);
+
+	int 	capacity();
+	bool 	done();
 };
 
 

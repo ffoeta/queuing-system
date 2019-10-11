@@ -70,22 +70,6 @@ void Device::find() {
 	} while ( (array_[current_] != -1) && (current_ != temp) );
 };
 
-int Device::free(){
-	int count = 0;
-	for (int i = 0; i < N_; ++i)
-	{
-		if (array_[i] == -1) {
-			count++;
-		}
-	}
-	return count;
-};
-
-
-
-
-
-
 void Device::work() {
 	time_ = this->superviser->get();
 	this->finish();
@@ -93,7 +77,7 @@ void Device::work() {
 };
 
 void Device::collect() {
-	int f = this->free();
+	int f = this->capacity();
 
 	if (doPrint_)
 		std::cout << f << " Devices free " << std::endl;
@@ -123,13 +107,15 @@ void Device::finish() {
 			if (doPrint_)
 				std::cout << "Device : Done with " << array_[i] << " waited " << wait_[i] << std::endl;
 
-			wait_[i] = -1;
-			array_[i] = -1;
+			this->free(i);
 		}
 	}
 };
 
-
+void Device::free(int i) {
+	wait_[i] = -1;
+	array_[i] = -1;
+};
 
 
 
@@ -139,6 +125,27 @@ void Device::finish() {
 int Device::fx(){
 	int x = rand() % 10;
 	return x + 15;
+};
+
+
+
+
+
+int Device::capacity(){
+	int count = 0;
+	for (int i = 0; i < N_; i++)
+	{
+		if (array_[i] == -1) {
+			count++;
+		}
+	}
+	return count;
+};
+
+bool Device::done() {
+	if (this->capacity() == N_)
+		return true;
+	return false;
 };
 
 

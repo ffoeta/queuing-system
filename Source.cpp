@@ -21,24 +21,23 @@ void Source::init(Father * obj) {
 };
 
 void Source::send(int i) {
-	this->superviser->created();
 	this->buffer->get(i);
 };
 
-void Source::get(int i) {
-	this->time_ = superviser->get();
-	this->collect();
-	this->generate();
-};
+void Source::get(int i) {};
 
 int Source::ask() {return 0;};
 
 void Source::generate() {
 	for (int i = 0; i < N_; i++) {
+		if (this->superviser->over()) {
+			return;
+		}
 		if (array_[i] == -1) {
 			array_[i] = this->time_ + this->fx();
 			if (doPrint_)
 				std::cout << "Source : Generated at  " << i << " set to " << this->array_[i] << std::endl;
+			this->superviser->created();
 			this->set(i);
 		}
 	}
@@ -69,6 +68,29 @@ void Source::free(int i){
 	array_[i] = -1;
 }
 
+void Source::work() {
+	this->time_ = superviser->get();
+	this->collect();
+	
+	if (!this->superviser->over()) {
+		this->generate();
+	}
+}
+
+int Source::capacity(){
+	int count = 0;
+	for (int i = 0; i < N_; ++i) {
+		if (array_[i]==-1)
+			count++;
+	};
+	return count;
+};
+
+bool Source::done() {
+	if (this->capacity() == N_)
+		return true;
+	return false;
+};
 
 
 
