@@ -123,8 +123,7 @@ void Device::free(int i) {
 
 
 int Device::fx(){
-	int x = rand() % 10;
-	return x + 15;
+	return (-1.0 / 1.5*log(rand()/(double)RAND_MAX));
 };
 
 

@@ -3,6 +3,8 @@
 #include "Father.hpp"
 #include "Superviser.hpp"
 #include <iostream>
+#include <math.h>
+#include <cmath>
 
 class Device : public Father {
 private:

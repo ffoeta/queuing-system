@@ -56,8 +56,9 @@ void Source::collect() {
 };
 
 int Source::fx(){
-	int x = rand() % 10 + 1;
-	return x + 10;
+	int a = 0;
+	int b = 1;
+	return (double)a+(double)(b-a)*(rand()%100)/100;;
 }
 
 void Source::set(int i){
