@@ -1,4 +1,6 @@
 #ifndef SUPERVISER_HPP
+#define SUPERVISER_HPP
+
 #include <list>
 #include <iostream>
 
@@ -30,5 +32,4 @@ public:
 	
 };
 
-#define SUPERVISER_HPP
 #endif

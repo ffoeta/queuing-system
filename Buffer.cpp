@@ -127,17 +127,3 @@ bool Buffer::done() {
 		return true;
 	return false;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,5 @@
 #ifndef BUFFER_HPP
+#define BUFFER_HPP
 
 #include "Father.hpp"
 #include "Superviser.hpp"
@@ -34,5 +35,5 @@ public:
 };
 
 
-#define BUFFER_HPP
+
 #endif

@@ -1,4 +1,5 @@
 #ifndef DEVICE_HPP
+#define DEVICE_HPP
 
 #include "Father.hpp"
 #include "Superviser.hpp"
@@ -47,5 +48,5 @@ public:
 };
 
 
-#define DEVICE_HPP
+
 #endif

@@ -1,4 +1,5 @@
 #ifndef FATHER_HPP
+#define FATHER_HPP 
 
 class Father
 {
@@ -9,5 +10,5 @@ public:
 	virtual int ask() = 0;
 };
 
-#define FATHER_HPP 
+
 #endif

@@ -1,4 +1,5 @@
 #ifndef SOURCE_HPP
+#define SOURCE_HPP
 
 #include "Father.hpp"
 #include "Superviser.hpp"
@@ -37,5 +38,5 @@ public:
 };
 
 
-#define SOURCE_HPP
+
 #endif

@@ -13,15 +13,10 @@ Device::Device(Superviser * superviser, int N) :
 	}
 }
 
-
 Device::~Device(){
 	delete array_;
 	delete wait_;
 }
-
-
-
-
 
 void Device::init(Father * buffer) {
 	this->buffer = buffer;
@@ -32,12 +27,6 @@ void Device::get(int i) {};
 void Device::send(int i) {};
 
 int Device::ask() {return 0;};
-
-
-
-
-
-
 
 void Device::inc() {
 	if (current_ + 1 == N_) {
@@ -54,11 +43,6 @@ void Device::dec() {
 		current_--;
 	}
 }
-
-
-
-
-
 
 void Device::find() {
 	if (array_[current_] < 0) {
@@ -117,18 +101,9 @@ void Device::free(int i) {
 	array_[i] = -1;
 };
 
-
-
-
-
-
 int Device::fx(){
 	return (-1.0 / 1.5*log(rand()/(double)RAND_MAX));
 };
-
-
-
-
 
 int Device::capacity(){
 	int count = 0;
@@ -146,12 +121,3 @@ bool Device::done() {
 		return true;
 	return false;
 };
-
-
-
-
-
-
-
-
-

@@ -92,18 +92,3 @@ bool Source::done() {
 		return true;
 	return false;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
