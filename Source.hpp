@@ -1,36 +1,38 @@
 #ifndef SOURCE_HPP
 #define SOURCE_HPP
 
-#include "Father.hpp"
-#include "Superviser.hpp"
+#include "TimeStackInterface.hpp"
+#include "Buffer.hpp"
+
 #include <iostream>
 #include <math.h>
 #include <cmath>
 
-class Source : public Father {
+class Source : public TimeStackInterface {
 private:
-	int 	N_;
-	int 	time_;
-	int * 	array_;
-	bool 	doPrint_;
+	int 		N_;
+	float 		time_;
+	Package  *  array_;
+	bool 		doPrint_;
 
-	Father * 		buffer;
-	Superviser * 	superviser;
+	Buffer 		* 	buffer_;
+	Superviser 	* 	superviser_;
 public:
-	Source(Superviser * superviser, int N);
+	Source(Superviser * superviser, Buffer * buffer, int N);
 	~Source();
 
-	void 	init(Father * obj) 	override;
-	void 	send(int i) 		override;
-	void 	get(int i) 			override;
-	int  	ask() 				override;
+
+	void 	create(Package * package);
+	void 	send(Package * package);
 
 	void 	generate();
 	void 	collect();
 
-	int  	fx();
-	void 	set(int i);
-	void 	free(int i);
+	float  	fx();
+
+	void 	notify(float time);
+
+	void 	free(Package * package);
 	void 	work();
 	
 	int 	capacity();

@@ -1,37 +1,35 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include "Father.hpp"
 #include "Superviser.hpp"
 #include <iostream>
+#include <math.h>
+#include <cmath>
 
-class Buffer : public Father {
+class Buffer {
 private:
-	int 	N_;
-	int  * 	array_;
-	int 	current_;
-	bool 	doPrint_;
+	int 			N_;
+	Package  *	array_;
+	int 		current_;
+	bool 		doPrint_;
 
-	Superviser * 	superviser;
+	Superviser * 	superviser_;
 public:
 	Buffer(Superviser * superviser, int N);
 	~Buffer();
 
-	void 	init(Father * obj) 	override;
-	void 	send(int i) 		override;
-	void 	get(int i) 			override;
-	int 	ask() 				override;
+	void 				get(Package package);
+	std::list<Package> 	select(int f);
+	int 				search();
 
+	void 				inc();
+	void 				dec();
+	void 				find();
 
+	void				free(int i);
 
-	void 	inc();
-	void 	dec();
-	void 	find();
-	int 	select();
-	void	free(int i);
-
-	int 	capacity();
-	bool 	done();
+	int 				capacity();
+	bool 				done();
 };
 
 

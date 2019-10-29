@@ -4,31 +4,38 @@
 #include <list>
 #include <iostream>
 
+#include "Package.hpp"
+
 class Superviser {
 private:
 	int 			N_;
-	int 			created_;
-	int 			sent_;
-	int 			current_;
-	int 			debug_;
 
-	std::list<int>  dropped_;
-	std::list<int>  time_;
+	float 			current_;
+	int 			debug_;
+	int				source_created_;
+	int 			dropped_;
+	int				sources_;
+	int				devices_;
+	int				buffers_;
+
+	std::list<Package>  packages_;
+	std::list<float>  	time_;
 public:
-	Superviser(int N, int debug);
+	Superviser(int N, int sources, int buffers, int devices, int debug);
 	~Superviser();
 
 	bool 	over();
 	void 	next();
 
-	int 	get();
-	int 	add(int N);
-	void 	drop(int i);
-	void 	created();
-	void 	sent();
+	float 	time();
+
+	void 	collect(Package packages);
+	int 	add(float N);
+	void	created();
 	
 	bool 	debug();
 	void 	stats();
+	void 	sort();
 	
 };
 

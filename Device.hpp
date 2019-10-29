@@ -1,43 +1,39 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
-#include "Father.hpp"
 #include "Superviser.hpp"
+#include "Buffer.hpp"
 #include <iostream>
 #include <math.h>
 #include <cmath>
 
-class Device : public Father {
+class Device {
 private:
-	int 	N_;
-	int 	time_;
-	int 	current_;
-	int * 	array_;
-	int * 	wait_;
-	bool 	doPrint_;
+	int 			N_;
+	float 			time_;
+	int 			current_;
 
-	Father * 		buffer;
-	Superviser * 	superviser;
+	Package 	* 	array_;
+
+	bool 			doPrint_;
+	Buffer 		* 	buffer_;
+	Superviser 	* 	superviser_;
 	
 public:
-	Device(Superviser * superviser, int N);
+	Device(Superviser * superviser, Buffer * buffer, int N);
 	~Device();
-
-	void 	init(Father * obj) 	override;
-	void 	send(int i) 		override;
-	void 	get(int i) 			override;
-	int 	ask() 				override;
 
 	void 	inc();
 	void 	dec();
 	void 	find();
+	void 	place(std::list<Package> packages);
 
 	void 	work();
 	void 	collect();
 	void 	finish();
-	void 	free(int i);
+	void 	free(Package * package);
 	
-	int 	fx();
+	float 	fx();
 
 	int 	capacity();
 	bool 	done();
