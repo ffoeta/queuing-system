@@ -12,13 +12,15 @@ private:
 
 	Package 	* 	array_;
 
-	bool 			doPrint_;
+	Run_Type 		debug_;
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 	
 public:
 	Device(Superviser * superviser, Buffer * buffer, int N);
 	~Device();
+
+	std::string stat();
 
 	void 	notify(float time);
 

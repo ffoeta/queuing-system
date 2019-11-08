@@ -17,6 +17,8 @@ public:
 	Source(Superviser * superviser, Buffer * buffer, int N);
 	~Source();
 
+	std::string stat();
+
 	void 	notify(float time);
 
 	void 	create(Package * package);

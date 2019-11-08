@@ -22,6 +22,10 @@ void Source::create(Package * package) {
 	this->notify(package->getSourceCreated());
 }
 
+std::string Source::stat() {
+	return("SOURCE	| total: " + std::to_string(N_) + " | free: " + std::to_string(capacity()));
+};
+
 
 void Source::send(Package * package) {
 	buffer_->get(*package);
@@ -32,8 +36,6 @@ void Source::generate() {
 	for (int i = 0; i < N_; i++) {
 		if (array_[i].null()) {
 			this->create(&array_[i]);
-				if (doPrint_)
-					std::cout << "Source: set to " << this->array_[i].getSourceCreated() << std::endl;
 		}
 	}
 };
@@ -42,8 +44,6 @@ void Source::generate() {
 void Source::collect() {
 	for (int i = 0; i < N_; i++) {
 		if (array_[i].getSourceCreated() == this->time_) {
-			if (doPrint_)
-				std::cout << "Source : Time is up. " << i << " send to buffer" << std::endl;
 			this->send(&array_[i]);
 		};
 	};

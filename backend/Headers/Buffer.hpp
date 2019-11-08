@@ -5,18 +5,21 @@
 #include <iostream>
 #include <math.h>
 #include <cmath>
+#include <string>
 
 class Buffer {
 private:
 	int 			N_;
 	Package  *	array_;
 	int 		current_;
-	bool 		doPrint_;
+	Run_Type 	debug_;
 
 	Superviser * 	superviser_;
 public:
 	Buffer(Superviser * superviser, int N);
 	~Buffer();
+
+	std::string 		stat();
 
 	void 				get(Package package);
 	std::list<Package> 	select(int f);
