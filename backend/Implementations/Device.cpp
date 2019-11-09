@@ -1,14 +1,14 @@
 #include "../Headers/Device.hpp"
 
-Device::Device(Superviser * superviser, Buffer * buffer, int N) : 
-	superviser_(superviser), buffer_(buffer), N_(N), time_(0), current_(0) {
-
+void Device::set(Superviser * superviser, Buffer * buffer, int N) {
+	this -> N_ = N; 
+	this -> time_ = 0;
+	this -> current_ = 0;
+	this -> l_ = 1.5;
+	this -> superviser_ = superviser;
+	this -> buffer_ = buffer;
 	debug_ = this->superviser_->debug();
 	array_ = new Package[N_];
-}
-
-Device::~Device(){
-	delete array_;
 }
 
 std::string Device::stat() {
@@ -90,8 +90,12 @@ void Device::free(Package * package) {
 };
 
 float Device::fx(){
-	return (-1.0 / 1.5*log(rand()/(double)RAND_MAX));
+	return (-1.0 / this->l_*log(rand()/(double)RAND_MAX));
 };
+
+void Device::setConstant(float l) {
+	this->l_ = l;
+}
 
 int Device::capacity(){
 	int count = 0;

@@ -1,5 +1,4 @@
-#include "frontend/Interface.hpp"
-#include "backend/BLogic.hpp"
+#include "frontend/Interface/Interface.hpp"
 
 #include <QApplication>
 

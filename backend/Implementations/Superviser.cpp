@@ -1,12 +1,17 @@
 #include "../Headers/Superviser.hpp"
 
-Superviser::Superviser(int N, int sources, int buffers, int devices, Run_Type debug) : 
-	N_(N), sources_(sources), buffers_(buffers), devices_(devices), debug_(debug), current_(0), dropped_(0), source_created_(0) {
+void Superviser::set(int N, int sources, int buffers, int devices, Run_Type debug) {
+	this -> N_ = N; 
+	this -> sources_ = sources; 
+	this -> buffers_ = buffers;
+	this -> devices_ = devices;
+	this -> debug_ = debug; 
+	this -> current_ = 0;
+	this -> dropped_ = 0;
+	this -> source_created_ = 0;
 	this->time_ = std::list<float>();
 	this->packages_ = std::list<Package>();
 }
-
-Superviser::~Superviser(){};
 
 float Superviser::time() {
 	return this->current_;
@@ -41,10 +46,6 @@ void Superviser::next() {
 	this->time_.sort();
 	this->current_ = this->time_.front();
 	this->time_.pop_front();
-	if (this->debug_ == MANUAL) {
-		std::cout << "NEXT TIME : " << this->current_ <<std::endl;
-		std::cin.get();
-	}
 };
 
 bool Superviser::over() {
@@ -77,5 +78,10 @@ void Superviser::stats() { //REDO
 
 	for (std::list<Package>::iterator package = packages_.begin(); package != packages_.end(); ++package){};
 };
+
+ResultContainer Superviser::result(){
+	return ResultContainer(N_, current_, debug_, source_created_, 
+					dropped_, sources_, devices_, buffers_, packages_, time_);
+}
 
 

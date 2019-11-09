@@ -10,6 +10,8 @@ private:
 	float 			time_;
 	int 			current_;
 
+	float 			l_;
+
 	Package 	* 	array_;
 
 	Run_Type 		debug_;
@@ -17,8 +19,8 @@ private:
 	Superviser 	* 	superviser_;
 	
 public:
-	Device(Superviser * superviser, Buffer * buffer, int N);
-	~Device();
+
+	void 	set(Superviser * superviser, Buffer * buffer, int N);
 
 	std::string stat();
 
@@ -35,6 +37,7 @@ public:
 	void 	free(Package * package);
 	
 	float 	fx();
+	void 	setConstant(float l);
 
 	int 	capacity();
 	bool 	done();

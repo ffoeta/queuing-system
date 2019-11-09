@@ -11,11 +11,14 @@ private:
 	Package  *  array_;
 	bool 		doPrint_;
 
+	float		a_;
+	float		b_;
+
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 public:
-	Source(Superviser * superviser, Buffer * buffer, int N);
-	~Source();
+
+	void set(Superviser * superviser, Buffer * buffer, int N);
 
 	std::string stat();
 
@@ -28,6 +31,7 @@ public:
 	void 	collect();
 
 	float  	fx();
+	void 	setConstants(float a, float b);
 
 	void 	free(Package * package);
 	void 	work();

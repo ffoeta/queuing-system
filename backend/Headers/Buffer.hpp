@@ -16,8 +16,7 @@ private:
 
 	Superviser * 	superviser_;
 public:
-	Buffer(Superviser * superviser, int N);
-	~Buffer();
+	void 				set(Superviser * superviser, int N);
 
 	std::string 		stat();
 

@@ -6,24 +6,24 @@
 #include <QLineEdit>
 #include <QGroupBox>
 
-//#include "../backend/BLogic.hpp"
+#include "../../backend/Interface/InnerAPI.hpp"
 
 class Interface : public QWidget
 {
 public:
     Interface();
-
+    void initializeButtons();
+    void initializeFormLines();
 private:
+    InnerAPI api_;
+
     QWidget *buttonsHolder;
     QPushButton *buttons[2];
 
     QGroupBox *formGroupBox;
     QLineEdit *lineEdits[7];
 
-    void initializeButtons();
-    void initializeFormLines();
-
-    void startModuling(bool mode);
+    void startModuling(Run_Type run_type);
     // Настройка с двумя кнопками -> они переходят в автоматический режим или в ручной
 };
 

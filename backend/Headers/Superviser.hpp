@@ -7,6 +7,8 @@
 #include "Package.hpp"
 #include "RunType.hpp"
 
+#include "ResultContainer.hpp"
+
 class Superviser {
 private:
 	int 			N_;
@@ -22,8 +24,7 @@ private:
 	std::list<Package>  packages_;
 	std::list<float>  	time_;
 public:
-	Superviser(int N, int sources, int buffers, int devices, Run_Type run_t);
-	~Superviser();
+	void set(int N, int sources, int buffers, int devices, Run_Type run_t);
 
 	std::string stat();
 	Run_Type debug();
@@ -39,6 +40,8 @@ public:
 	
 	void 	stats();
 	void 	sort();
+
+	ResultContainer result();
 	
 };
 

@@ -13,8 +13,6 @@ dropped_(-1)
 		this->setN(n);
 	};
 
-
-
 	void Package::reboot() {
 		this->init(-1);
 		this->setSourceInitiated(-1);

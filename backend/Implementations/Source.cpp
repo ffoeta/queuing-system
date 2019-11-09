@@ -1,8 +1,12 @@
 #include "../Headers/Source.hpp"
 
-
-Source::Source(Superviser * superviser, Buffer * buffer, int N) : 
-	superviser_(superviser), buffer_(buffer), N_(N), time_(0) {
+void Source::set(Superviser * superviser, Buffer * buffer, int N) {
+	this -> N_ = N;
+	this -> time_ = 0;
+	this -> a_ = 0;
+	this -> b_ = 1;
+	this -> superviser_ = superviser; 
+	this -> buffer_ = buffer;
 
 	doPrint_ = this->superviser_->debug();
 	this->array_ = new Package[N_];
@@ -11,10 +15,6 @@ Source::Source(Superviser * superviser, Buffer * buffer, int N) :
 		array_[i].init(i);
 	}
 }
-
-Source::~Source(){
-	delete this->array_;
-};
 
 void Source::create(Package * package) {
 	package->setSourceInitiated(this->time_);
@@ -50,9 +50,12 @@ void Source::collect() {
 };
 
 float Source::fx(){
-	int a = 0;
-	int b = 1;
-	return (double)a+(double)(b-a)*(rand()%100)/100;;
+	return a_+(b_-a_)*(rand()%100)/100;;
+}
+
+void Source::setConstants(float a, float b) {
+	this->a_ = a;
+	this->b_ = b;
 }
 
 void Source::notify(float time){

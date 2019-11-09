@@ -3,7 +3,9 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <iostream>
-#include "../Interface.hpp"
+#include "../Interface/Interface.hpp"
+#include "../Interface/Auto.hpp"
+#include "../Interface/Manual.hpp"
 
 Interface::Interface()
 {
@@ -25,11 +27,11 @@ void Interface::initializeButtons()
 
     buttons[0] = new QPushButton(tr("Ручной"));
     layout->addWidget(buttons[0]);
-    connect(buttons[0], &QPushButton::clicked, this, [this]() { this->startModuling(true); });
+    connect(buttons[0], &QPushButton::clicked, this, [this]() { this->startModuling(MANUAL); });
 
     buttons[1] = new QPushButton(tr("Автоматический"));
     layout->addWidget(buttons[1]);
-    connect(buttons[1], &QPushButton::clicked, this, [this]() { this->startModuling(false); });
+    connect(buttons[1], &QPushButton::clicked, this, [this]() { this->startModuling(AUTO); });
 
     buttonsHolder->setLayout(layout);
 }
@@ -47,47 +49,46 @@ void Interface::initializeFormLines()
     this->lineEdits[5] = new QLineEdit(tr("0"));
     this->lineEdits[6] = new QLineEdit(tr("1"));
 
-    layout->addRow(new QLabel(tr("Количество источников:")), this->lineEdits[0]);
-    layout->addRow(new QLabel(tr("Количество буферов:")), this->lineEdits[1]);
-    layout->addRow(new QLabel(tr("Количество приборов:")), this->lineEdits[2]);
-    layout->addRow(new QLabel(tr("Количество заявок:")), this->lineEdits[3]);
-    layout->addRow(new QLabel(tr("Интенсивность источников:")), this->lineEdits[4]);
-    layout->addRow(new QLabel(tr("Приборы, A:")), this->lineEdits[5]);
-    layout->addRow(new QLabel(tr("Приборы, B:")), this->lineEdits[6]);
+    layout->addRow(new QLabel(tr("Sources:")), this->lineEdits[0]);
+    layout->addRow(new QLabel(tr("Buffers:")), this->lineEdits[1]);
+    layout->addRow(new QLabel(tr("Devices:")), this->lineEdits[2]);
+    layout->addRow(new QLabel(tr("N packages:")), this->lineEdits[3]);
+    layout->addRow(new QLabel(tr("Sources const:")), this->lineEdits[4]);
+    layout->addRow(new QLabel(tr("Devices A:")), this->lineEdits[5]);
+    layout->addRow(new QLabel(tr("Devices B:")), this->lineEdits[6]);
 
     this->formGroupBox->setLayout(layout);
 }
 
-void Interface::startModuling(bool mode)
+void Interface::startModuling(Run_Type run_type)
 {
-    std::cout << "RUN" << std::endl;
-    int nSources = this->lineEdits[0]->text().toInt();
-    int nBuffer = this->lineEdits[1]->text().toInt();
-    int nDevices = this->lineEdits[2]->text().toInt();
-    int amount = this->lineEdits[3]->text().toInt();
-    double labmda = this->lineEdits[4]->text().toDouble();
+    
+
+    int n_soruces = this->lineEdits[0]->text().toInt();
+    int n_buffers = this->lineEdits[1]->text().toInt();
+    int n_devices = this->lineEdits[2]->text().toInt();
+    int n_requests = this->lineEdits[3]->text().toInt();
+    double l = this->lineEdits[4]->text().toDouble();
     double a = this->lineEdits[5]->text().toDouble();
     double b = this->lineEdits[6]->text().toDouble();
-    
-    
-    
-    //run(Run_Type::AUTO, 16, 10, 7, 1000);
 
-    // QWidget *goTo;
-    // if (mode)
-    // {
-    //     goTo = new Manual(nSources, nBuffer, nDevices, unit);
-    // }
-    // else
-    // {
-    //     goTo = new Auto(nSources, nDevices, unit);
-    // }
+    api_.set(run_type, n_soruces, n_buffers, n_devices, n_requests, a, b, l);
+ 
+    QWidget *goTo;
+    if (run_type == AUTO)
+    {
+        goTo = new Auto(&api_);
+    }
+    else
+    {
+        goTo = new Manual(&api_);
+    }
 
-    // QVBoxLayout *layout = new QVBoxLayout;
-    // layout->addWidget(goTo);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(goTo);
 
-    // qDeleteAll(this->children());
-    // delete this->layout();
+    qDeleteAll(this->children());
+    delete this->layout();
 
-    // this->setLayout(layout);
+    this->setLayout(layout);
 }
