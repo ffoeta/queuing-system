@@ -1,21 +1,25 @@
 #ifndef SOURCE_HPP
 #define SOURCE_HPP
 
-#include "../Interface/TimeStackInterface.hpp"
 #include "Buffer.hpp"
 
-class Source : public TimeStackInterface {
+class Source {
 private:
 	int 		N_;
 	float 		time_;
 	Package  *  array_;
-	bool 		doPrint_;
+	bool 		debug_;
+
+	float		a_;
+	float		b_;
 
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 public:
-	Source(Superviser * superviser, Buffer * buffer, int N);
-	~Source();
+
+	void set(Superviser * superviser, Buffer * buffer, int N);
+
+	std::string stat();
 
 	void 	notify(float time);
 
@@ -26,6 +30,7 @@ public:
 	void 	collect();
 
 	float  	fx();
+	void 	setConstants(float a, float b);
 
 	void 	free(Package * package);
 	void 	work();

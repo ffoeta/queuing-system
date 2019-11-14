@@ -1,4 +1,4 @@
-#include "../Headers/Package.hpp"
+#include "../headers/Package.hpp"
 
 Package::Package() :
 n_(-1),
@@ -12,8 +12,6 @@ dropped_(-1)
 	void Package::init(int n) {
 		this->setN(n);
 	};
-
-
 
 	void Package::reboot() {
 		this->init(-1);

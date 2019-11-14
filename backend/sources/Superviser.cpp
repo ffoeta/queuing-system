@@ -1,19 +1,20 @@
-#include "../Headers/Superviser.hpp"
+#include "../headers/Superviser.hpp"
 
-Superviser::Superviser(int N, int sources, int buffers, int devices, int debug) : 
-	N_(N), sources_(sources), buffers_(buffers), devices_(devices), debug_(debug), current_(0), dropped_(0), source_created_(0) {
+void Superviser::set(int N, int sources, int buffers, int devices, Run_Type debug) {
+	this -> N_ = N; 
+	this -> sources_ = sources; 
+	this -> buffers_ = buffers;
+	this -> devices_ = devices;
+	this -> debug_ = debug; 
+	this -> current_ = 0;
+	this -> dropped_ = 0;
+	this -> source_created_ = 0;
 	this->time_ = std::list<float>();
 	this->packages_ = std::list<Package>();
 }
 
-Superviser::~Superviser(){};
-
 float Superviser::time() {
 	return this->current_;
-};
-
-bool Superviser::debug() {
-	return (debug_ > 0)?true:false;
 };
 
 int Superviser::add(float N) {
@@ -34,21 +35,17 @@ void Superviser::collect(Package package) {
 	this->packages_.push_back(package);
 }
 
-void Superviser::next(Run_Type run_t) {
+Run_Type Superviser::debug() {
+	return debug_;
+};
+
+void Superviser::next() {
 	if (time_.empty()){
 		return;
 	}
 	this->time_.sort();
 	this->current_ = this->time_.front();
 	this->time_.pop_front();
-	if (this->debug_) {
-		std::cout << "TIME : " << this->current_ <<std::endl;
-		std::cout << source_created_ <<std::endl;
-	}
-
-	if (run_t == MANUAL) {
-		std::cin.get();
-	};
 };
 
 bool Superviser::over() {
@@ -57,6 +54,10 @@ bool Superviser::over() {
 
 void Superviser::sort() {
 
+};
+
+std::string Superviser::stat() {
+	return("TIME IS "+ std::to_string(current_));
 };
 
 void Superviser::stats() { //REDO
@@ -77,5 +78,10 @@ void Superviser::stats() { //REDO
 
 	for (std::list<Package>::iterator package = packages_.begin(); package != packages_.end(); ++package){};
 };
+
+ResultContainer Superviser::result(){
+	return ResultContainer(N_, current_, debug_, source_created_, 
+					dropped_, sources_, devices_, buffers_, packages_, time_);
+}
 
 

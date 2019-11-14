@@ -1,10 +1,14 @@
-#include "../Headers/Source.hpp"
+#include "../headers/Source.hpp"
 
+void Source::set(Superviser * superviser, Buffer * buffer, int N) {
+	this -> N_ = N;
+	this -> time_ = 0;
+	this -> a_ = 0;
+	this -> b_ = 1;
+	this -> superviser_ = superviser; 
+	this -> buffer_ = buffer;
 
-Source::Source(Superviser * superviser, Buffer * buffer, int N) : 
-	superviser_(superviser), buffer_(buffer), N_(N), time_(0) {
-
-	doPrint_ = this->superviser_->debug();
+	debug_ = this->superviser_->debug();
 	this->array_ = new Package[N_];
 
 	for (int i = 0; i < N_; ++i) {
@@ -12,15 +16,15 @@ Source::Source(Superviser * superviser, Buffer * buffer, int N) :
 	}
 }
 
-Source::~Source(){
-	delete this->array_;
-};
-
 void Source::create(Package * package) {
 	package->setSourceInitiated(this->time_);
 	package->setSourceCreated(this->time_ + this->fx());
 	this->notify(package->getSourceCreated());
 }
+
+std::string Source::stat() {
+	return("SOURCE	| total: " + std::to_string(N_) + " | free: " + std::to_string(capacity()));
+};
 
 
 void Source::send(Package * package) {
@@ -32,8 +36,6 @@ void Source::generate() {
 	for (int i = 0; i < N_; i++) {
 		if (array_[i].null()) {
 			this->create(&array_[i]);
-				if (doPrint_)
-					std::cout << "Source: set to " << this->array_[i].getSourceCreated() << std::endl;
 		}
 	}
 };
@@ -42,17 +44,18 @@ void Source::generate() {
 void Source::collect() {
 	for (int i = 0; i < N_; i++) {
 		if (array_[i].getSourceCreated() == this->time_) {
-			if (doPrint_)
-				std::cout << "Source : Time is up. " << i << " send to buffer" << std::endl;
 			this->send(&array_[i]);
 		};
 	};
 };
 
 float Source::fx(){
-	int a = 0;
-	int b = 1;
-	return (double)a+(double)(b-a)*(rand()%100)/100;;
+	return a_+(b_-a_)*(rand()%100)/100;;
+}
+
+void Source::setConstants(float a, float b) {
+	this->a_ = a;
+	this->b_ = b;
 }
 
 void Source::notify(float time){

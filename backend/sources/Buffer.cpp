@@ -1,14 +1,15 @@
-#include "../Headers/Buffer.hpp"
+#include "../headers/Buffer.hpp"
 
-Buffer::Buffer(Superviser * superviser, int N) : 
-	superviser_(superviser), N_(N), current_(0) {
+void Buffer::set(Superviser * superviser, int N) {
+	this -> superviser_ = superviser;
+	this -> N_ = N;
+	this -> current_ = 0;
+	this -> debug_ = this->superviser_->debug();
+	this -> array_ = new Package[N_];
+}
 
-	doPrint_ = this->superviser_->debug();
-	this->array_ = new Package[N_];
-};
-
-Buffer::~Buffer(){
-	delete array_;
+std::string Buffer::stat() {
+	return("BUFFER	| total: " + std::to_string(N_) + " | free: " + std::to_string(capacity()));
 };
 
 void Buffer::get(Package package) {
@@ -20,14 +21,8 @@ void Buffer::get(Package package) {
 
 		superviser_->collect(array_[current_]);
 
-		if (doPrint_)
-			std::cout << "emplaced " << array_[current_].getN() << " with " << package.getN() << std::endl;
-
 		array_[current_] = package;
 	} else {
-		
-		if (doPrint_)
-			std::cout << "Buffer : Recived " << package.getN() << " from Source" << std::endl;
 		
 		array_[current_] = package;
 	}

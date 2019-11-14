@@ -10,12 +10,17 @@
             "args": [
                 "-o",
                 "smo",
+                "-g",
+                "`pkg-config",
+                "--cflags",
+                "--libs",
+                "Qt5Widgets`",
+                "-std=c++11",
+                "-fPIC",
                 "${workspaceFolder}/main.cpp",
-                "${workspaceFolder}/backend/**/*.cpp"
+                "${workspaceFolder}/backend/**/*.cpp",
+                "${workspaceFolder}/frontend/**/*.cpp"
             ],
-            "options": {
-                "cwd": "/usr/bin"
-            },
             "problemMatcher": [
                 "$gcc"
             ],

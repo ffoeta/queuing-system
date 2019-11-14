@@ -1,24 +1,27 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
-#include "../Interface/TimeStackInterface.hpp"
 #include "Buffer.hpp"
 
-class Device : public TimeStackInterface {
+class Device {
 private:
 	int 			N_;
 	float 			time_;
 	int 			current_;
 
+	float 			l_;
+
 	Package 	* 	array_;
 
-	bool 			doPrint_;
+	Run_Type 		debug_;
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 	
 public:
-	Device(Superviser * superviser, Buffer * buffer, int N);
-	~Device();
+
+	void 	set(Superviser * superviser, Buffer * buffer, int N);
+	
+	std::string stat();
 
 	void 	notify(float time);
 
@@ -33,6 +36,7 @@ public:
 	void 	free(Package * package);
 	
 	float 	fx();
+	void 	setConstant(float l);
 
 	int 	capacity();
 	bool 	done();

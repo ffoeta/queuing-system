@@ -7,12 +7,14 @@
 #include "Package.hpp"
 #include "RunType.hpp"
 
+#include "ResultContainer.hpp"
+
 class Superviser {
 private:
 	int 			N_;
 
 	float 			current_;
-	int 			debug_;
+	Run_Type 		debug_;
 	int				source_created_;
 	int 			dropped_;
 	int				sources_;
@@ -22,11 +24,13 @@ private:
 	std::list<Package>  packages_;
 	std::list<float>  	time_;
 public:
-	Superviser(int N, int sources, int buffers, int devices, int debug);
-	~Superviser();
+	void 	set(int N, int sources, int buffers, int devices, Run_Type run_t);
+
+	std::string stat();
+	Run_Type debug();
 
 	bool 	over();
-	void 	next(Run_Type run_t);
+	void 	next();
 
 	float 	time();
 
@@ -34,9 +38,10 @@ public:
 	int 	add(float N);
 	void	created();
 	
-	bool 	debug();
 	void 	stats();
 	void 	sort();
+
+	ResultContainer result();
 	
 };
 
