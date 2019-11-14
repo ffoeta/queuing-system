@@ -1,4 +1,4 @@
-#include "../Headers/Device.hpp"
+#include "../headers/Device.hpp"
 
 void Device::set(Superviser * superviser, Buffer * buffer, int N) {
 	this -> N_ = N; 

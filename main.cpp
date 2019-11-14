@@ -1,4 +1,4 @@
-#include "frontend/Interface/Interface.hpp"
+#include "frontend/headers/Interface.hpp"
 
 #include <QApplication>
 
@@ -6,8 +6,9 @@ int main( int argc, char **argv )
 {
     QApplication app(argc, argv);
 
-    Interface vv;
+    
 
+    Interface vv;
     vv.show();
     return app.exec();
 }

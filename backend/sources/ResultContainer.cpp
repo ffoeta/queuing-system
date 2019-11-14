@@ -1,4 +1,4 @@
-#include "../Headers/ResultContainer.hpp"
+#include "../headers/ResultContainer.hpp"
 
 ResultContainer::ResultContainer(
     int N, 

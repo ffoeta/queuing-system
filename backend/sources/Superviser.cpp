@@ -1,4 +1,4 @@
-#include "../Headers/Superviser.hpp"
+#include "../headers/Superviser.hpp"
 
 void Superviser::set(int N, int sources, int buffers, int devices, Run_Type debug) {
 	this -> N_ = N; 

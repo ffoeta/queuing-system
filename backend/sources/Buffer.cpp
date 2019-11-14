@@ -1,4 +1,4 @@
-#include "../Headers/Buffer.hpp"
+#include "../headers/Buffer.hpp"
 
 void Buffer::set(Superviser * superviser, int N) {
 	this -> superviser_ = superviser;

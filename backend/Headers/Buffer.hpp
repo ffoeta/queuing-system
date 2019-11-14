@@ -17,7 +17,7 @@ private:
 	Superviser * 	superviser_;
 public:
 	void 				set(Superviser * superviser, int N);
-
+	
 	std::string 		stat();
 
 	void 				get(Package package);

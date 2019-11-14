@@ -1,15 +1,14 @@
 #ifndef SOURCE_HPP
 #define SOURCE_HPP
 
-#include "../Interface/TimeStackInterface.hpp"
 #include "Buffer.hpp"
 
-class Source : public TimeStackInterface {
+class Source {
 private:
 	int 		N_;
 	float 		time_;
 	Package  *  array_;
-	bool 		doPrint_;
+	bool 		debug_;
 
 	float		a_;
 	float		b_;

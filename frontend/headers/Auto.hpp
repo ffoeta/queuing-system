@@ -4,16 +4,18 @@
 #include <QWidget>
 #include <QTableWidget>
 #include <QGridLayout>
-#include "../../backend/Interface/InnerAPI.hpp"
+#include <QPushButton>
+#include "../../backend/headers/InnerAPI.hpp"
 #include "Interface.hpp"
 
 class Auto : public QWidget
 {
 public:
-    Auto(InnerAPI * api_);
-
+    Auto(Interface * parent);
 private:
-    InnerAPI * api_;
+    void goBack();
+    QPushButton *back_;
+    Interface * parent_;
 };
 
 #endif

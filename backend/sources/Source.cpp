@@ -1,4 +1,4 @@
-#include "../Headers/Source.hpp"
+#include "../headers/Source.hpp"
 
 void Source::set(Superviser * superviser, Buffer * buffer, int N) {
 	this -> N_ = N;
@@ -8,7 +8,7 @@ void Source::set(Superviser * superviser, Buffer * buffer, int N) {
 	this -> superviser_ = superviser; 
 	this -> buffer_ = buffer;
 
-	doPrint_ = this->superviser_->debug();
+	debug_ = this->superviser_->debug();
 	this->array_ = new Package[N_];
 
 	for (int i = 0; i < N_; ++i) {

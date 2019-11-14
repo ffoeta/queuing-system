@@ -1,10 +1,9 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
-#include "../Interface/TimeStackInterface.hpp"
 #include "Buffer.hpp"
 
-class Device : public TimeStackInterface {
+class Device {
 private:
 	int 			N_;
 	float 			time_;
@@ -21,7 +20,7 @@ private:
 public:
 
 	void 	set(Superviser * superviser, Buffer * buffer, int N);
-
+	
 	std::string stat();
 
 	void 	notify(float time);

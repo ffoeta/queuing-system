@@ -9,20 +9,23 @@
 #include <QString>
 #include <QVBoxLayout>
 
-#include "../../backend/Interface/InnerAPI.hpp"
+#include "../../backend/headers/InnerAPI.hpp"
 #include "Interface.hpp"
 
 class Manual : public QWidget
 {
 public:
-    Manual(InnerAPI * api);
+    Manual(Interface * parent);
 private:
-    InnerAPI * api_;
-    void check();
-    void check2();
-    QPushButton *button;
-    QPushButton *button2;
-    QLabel      *label;
+    void step();
+    void reboot();
+    void goBack();
+    
+    Interface * parent_;
+    QPushButton *step_;
+    QPushButton *back_;
+    QPushButton *reboot_;
+    QLabel      *label_;
 
 };
 

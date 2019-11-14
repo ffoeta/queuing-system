@@ -24,7 +24,7 @@ private:
 	std::list<Package>  packages_;
 	std::list<float>  	time_;
 public:
-	void set(int N, int sources, int buffers, int devices, Run_Type run_t);
+	void 	set(int N, int sources, int buffers, int devices, Run_Type run_t);
 
 	std::string stat();
 	Run_Type debug();

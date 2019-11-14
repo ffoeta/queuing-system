@@ -3,6 +3,7 @@
 
 
 enum Run_Type {
+    NONE,
     AUTO,
     MANUAL
 };

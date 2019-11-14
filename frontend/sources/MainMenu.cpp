@@ -3,11 +3,10 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <iostream>
-#include "../Interface/Interface.hpp"
-#include "../Interface/Auto.hpp"
-#include "../Interface/Manual.hpp"
+#include "../headers/MainMenu.hpp"
 
-Interface::Interface()
+MainMenu::MainMenu(Interface * parent) : 
+    parent_(parent)
 {
     this->initializeButtons();
     this->initializeFormLines();
@@ -20,25 +19,25 @@ Interface::Interface()
     this->setLayout(layout);
 }
 
-void Interface::initializeButtons()
+void MainMenu::initializeButtons()
 {
     this->buttonsHolder = new QWidget;
     QHBoxLayout *layout = new QHBoxLayout;
 
-    buttons[0] = new QPushButton(tr("Ручной"));
+    buttons[0] = new QPushButton(tr("manual"));
     layout->addWidget(buttons[0]);
-    connect(buttons[0], &QPushButton::clicked, this, [this]() { this->startModuling(MANUAL); });
+    connect(buttons[0], &QPushButton::clicked, this, [this]() { this->iterate(MANUAL); });
 
-    buttons[1] = new QPushButton(tr("Автоматический"));
+    buttons[1] = new QPushButton(tr("auto"));
     layout->addWidget(buttons[1]);
-    connect(buttons[1], &QPushButton::clicked, this, [this]() { this->startModuling(AUTO); });
+    connect(buttons[1], &QPushButton::clicked, this, [this]() { this->iterate(AUTO); });
 
     buttonsHolder->setLayout(layout);
 }
 
-void Interface::initializeFormLines()
+void MainMenu::initializeFormLines()
 {
-    this->formGroupBox = new QGroupBox(tr("Настройки"));
+    this->formGroupBox = new QGroupBox(tr("setup"));
     QFormLayout *layout = new QFormLayout;
 
     this->lineEdits[0] = new QLineEdit(tr("3"));
@@ -60,10 +59,8 @@ void Interface::initializeFormLines()
     this->formGroupBox->setLayout(layout);
 }
 
-void Interface::startModuling(Run_Type run_type)
+void MainMenu::iterate(Run_Type run_type)
 {
-    
-
     int n_soruces = this->lineEdits[0]->text().toInt();
     int n_buffers = this->lineEdits[1]->text().toInt();
     int n_devices = this->lineEdits[2]->text().toInt();
@@ -72,23 +69,12 @@ void Interface::startModuling(Run_Type run_type)
     double a = this->lineEdits[5]->text().toDouble();
     double b = this->lineEdits[6]->text().toDouble();
 
-    api_.set(run_type, n_soruces, n_buffers, n_devices, n_requests, a, b, l);
- 
-    QWidget *goTo;
-    if (run_type == AUTO)
-    {
-        goTo = new Auto(&api_);
-    }
-    else
-    {
-        goTo = new Manual(&api_);
+    this -> parent_ -> setAPI(run_type, n_soruces, n_buffers, n_devices, n_requests, a, b, l);
+    if ( run_type == AUTO )
+    {   
+        this -> parent_ -> goToAuto();
+    } else {
+        this -> parent_ -> goToManual();
     }
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(goTo);
-
-    qDeleteAll(this->children());
-    delete this->layout();
-
-    this->setLayout(layout);
 }
