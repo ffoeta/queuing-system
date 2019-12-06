@@ -1,87 +1,72 @@
 #include "../headers/Superviser.hpp"
 
-void Superviser::set(int N, int sources, int buffers, int devices, Run_Type debug) {
+//конструктор
+Superviser::Superviser() :
+	N_(0), sources_(0), buffers_(0), devices_(0), current_(0), source_created_(0),data_()
+{
+	time_.clear();
+}
+
+//сеттер
+void Superviser::set(int N, int sources, int buffers, int devices) 
+{
 	this -> N_ = N; 
+
 	this -> sources_ = sources; 
 	this -> buffers_ = buffers;
 	this -> devices_ = devices;
-	this -> debug_ = debug; 
+
 	this -> current_ = 0;
-	this -> dropped_ = 0;
 	this -> source_created_ = 0;
-	this->time_ = std::list<float>();
-	this->packages_ = std::list<Package>();
+
+	this -> data_.set(sources_);
 }
 
-float Superviser::time() {
-	return this->current_;
-};
-
-int Superviser::add(float N) {
-	this->time_.push_back(N);
-	return 0;
-};
-
-void Superviser::created() {
-	this->source_created_++;
-};
-
-void Superviser::collect(Package package) {
-	if (package.getDeviceDone() == -1) {
-		package.setDropped(current_);
-		dropped_++;
-	}
-
-	this->packages_.push_back(package);
+//текущее время в системе
+float Superviser::getCurrentTime() 
+{
+	return this -> current_;
 }
 
-Run_Type Superviser::debug() {
-	return debug_;
-};
+//добавить событие
+void Superviser::addEvent(float time) 
+{
+	this->time_.push_back(time);
+}
 
-void Superviser::next() {
-	if (time_.empty()){
-		return;
-	}
+
+//обновить кол-во заявок
+void Superviser::addGenerated() 
+{
+	this -> source_created_++;
+}
+
+
+//регистрирация выбывших пакетов
+void Superviser::addPackage(Package p)
+{
+	this -> data_.addPackage(p);
+}
+
+void Superviser::droppPackage(Package p)
+{
+	this -> data_.droppPackage(p);
+}
+
+//состояние
+void Superviser::next() 
+{
 	this->time_.sort();
 	this->current_ = this->time_.front();
 	this->time_.pop_front();
 };
 
-bool Superviser::over() {
-	return (source_created_ < N_)?false:true;
-};
-
-void Superviser::sort() {
-
-};
-
-std::string Superviser::stat() {
-	return("TIME IS "+ std::to_string(current_));
-};
-
-void Superviser::stats() { //REDO
-
-	this->sort();
-
-	std::cout << "STATS:  " << std::endl;	
-	std::cout << std::endl;	
-
-	std::cout << "  GENERATED:  " << std::endl;	
-	std::cout << source_created_ << "  |  " << (float)source_created_/source_created_ << std::endl;	
-	std::cout << std::endl;
-
-	std::cout << "  DROPPED:  " << std::endl;	
-	std::cout << dropped_ << "  |  " << (float)dropped_/source_created_<< std::endl;	
-	std::cout << std::endl;
-
-
-	for (std::list<Package>::iterator package = packages_.begin(); package != packages_.end(); ++package){};
-};
-
-ResultContainer Superviser::result(){
-	return ResultContainer(N_, current_, debug_, source_created_, 
-					dropped_, sources_, devices_, buffers_, packages_, time_);
+State Superviser::state()
+{
+	return this -> data_.sample();
 }
 
-
+bool Superviser::over()
+{
+	return (source_created_ < N_)?false:true;
+};

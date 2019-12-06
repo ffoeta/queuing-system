@@ -1,49 +1,47 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
+#include <math.h>
+#include <cmath>
 #include "Buffer.hpp"
+#include "Superviser.hpp"
 
-class Device {
+class Device 
+{
 private:
 	int 			N_;
-	float 			time_;
-	int 			current_;
 
+	int 			current_;
 	float 			l_;
 
 	Package 	* 	array_;
 
-	Run_Type 		debug_;
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 	
 public:
+	//констрктор деструктор
+	Device();
+	~Device();
 
+	//сеттер
 	void 	set(Superviser * superviser, Buffer * buffer, int N);
-	
-	std::string stat();
 
-	void 	notify(float time);
-
+	//управление через current_
+	void 	find();
 	void 	inc();
 	void 	dec();
-	void 	find();
-	void 	place(std::list<Package> packages);
 
+	//отработать цикл
 	void 	work();
-	void 	collect();
-	void 	finish();
-	void 	free(Package * package);
 	
+	//fx	
 	float 	fx();
 	void 	setConstant(float l);
 
+	//состояние
 	int 	capacity();
 	bool 	done();
-	
-
-	
-
 };
 
 

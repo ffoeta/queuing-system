@@ -1,45 +1,45 @@
 #include "../headers/InnerAPI.hpp"
 
+//коснтруктор деструктор
 InnerAPI::InnerAPI() : 
-	run_type_(MANUAL), n_sources_(0), n_buffers_(0), n_devices_(0),
-	n_requests_(0), a_(0), b_(0), l_(0) 
-{ 
-	superviser = new Superviser(); 
-	buffer = new Buffer();
-	source = new Source();
-	device	= new Device(); 
-}
+	run_type_(NONE), n_sources_(0), n_buffers_(0), n_devices_(0),
+	n_requests_(0), a_(0), b_(0), l_(0), 
+	superviser_(nullptr), buffer_(nullptr), source_(nullptr), device_(nullptr)
+{}
 
-ResultContainer InnerAPI::run(){
-
-	this -> randomize();
-
-	while (!superviser -> over() || !source -> done() || !buffer -> done() || !device -> done()) {
-		source -> work();
-		device -> work();
-		superviser -> next();
+InnerAPI::~InnerAPI()
+{
+	if (superviser_ != nullptr)
+	{
+		delete superviser_;
 	}
-	return superviser -> result();
+	if (buffer_ != nullptr)
+	{
+		delete buffer_;
+	}
+	if (source_ != nullptr)
+	{
+		delete source_;
+	}
+	if (device_ != nullptr)
+	{
+		delete device_;
+	}
 }
 
-ResultContainer InnerAPI::next(){
-		source -> work();
-		device -> work();
-		superviser -> next();
-	return this -> superviser -> result();
-}
+//ребут
+void InnerAPI::reboot() 
+{
+	delete buffer_;
+	delete source_;
+	delete device_;
 
-bool InnerAPI::over() {
-	return (superviser -> over() && source -> done() && buffer -> done() && device -> done());
-}
+  	this -> set(n_sources_, n_buffers_, n_devices_, n_requests_, a_, b_, l_);
+};
 
-void InnerAPI::randomize() {
-    std::srand(std::time(nullptr));
-}
-
-void InnerAPI::set(Run_Type run_type, int n_sources, int n_buffers, int n_devices, int n_requests, 
+//сеттеры
+void InnerAPI::set(int n_sources, int n_buffers, int n_devices, int n_requests, 
 			float a, float b, float l){
-		this -> run_type_ = run_type;
 		this -> n_sources_ = n_sources;
 		this -> n_buffers_ = n_buffers;
 		this -> n_devices_ = n_devices;
@@ -48,27 +48,53 @@ void InnerAPI::set(Run_Type run_type, int n_sources, int n_buffers, int n_device
 		this -> b_ = b;
 		this -> l_ = l;
 
-		this -> superviser -> set(n_requests_, n_sources_, n_buffers_, n_devices_, run_type_);
-		this -> buffer -> set(superviser, n_buffers_);
-		this -> source -> set(superviser, buffer, n_sources_);
-		this -> device -> set(superviser, buffer, n_devices_);
+		this -> superviser_ = new Superviser();
+		this -> buffer_ = new Buffer();
+		this -> source_ = new Source();
+		this -> device_ = new Device();
 
-		this -> source -> setConstants(a_, b_);
-		this -> device -> setConstant(l_);
+		this -> superviser_ -> set(n_requests_, n_sources_, n_buffers_, n_devices_);
+		this -> buffer_ -> set(superviser_, n_buffers_);
+		this -> source_ -> set(superviser_, buffer_, n_sources_);
+		this -> device_ -> set(superviser_, buffer_, n_devices_);
+
+		this -> source_ -> setConstants(a_, b_);
+		this -> device_ -> setConstant(l_);
 }
 
+void InnerAPI::setRunType(Run_Type run_type){
+	this -> run_type_ = run_type;
+}
 
-void InnerAPI::reboot() {
-  delete superviser; 
-  delete buffer; 
-  delete source;
-  delete device;
+//гетеры
+int InnerAPI::getNSources() {
+	return this -> n_sources_;
+}
 
-  superviser = new Superviser();
-  buffer = new Buffer();
-  source = new Source();
-  device = new Device();
+int InnerAPI::getNBuffers() {
+	return this -> n_buffers_;
+}
 
-  this -> set(run_type_, n_sources_, n_buffers_, n_devices_, n_requests_, a_, b_, l_);
-};
+int InnerAPI::getNDevices() {
+	return this -> n_devices_;
+}
 
+//исполнение программы
+State InnerAPI::run()
+{
+	while (!superviser_ -> over() || !source_ -> done() || !buffer_ -> done() || !device_ -> done()) 
+	{
+		source_ -> work();
+		device_ -> work();
+		superviser_ -> next();
+	}
+	return superviser_ -> state();
+}
+
+State InnerAPI::next()
+{
+	source_ 			-> work();
+	device_ 			-> work();
+	superviser_ 		-> next();
+	return	superviser_ -> state();
+}

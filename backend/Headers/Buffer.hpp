@@ -2,34 +2,38 @@
 #define BUFFER_HPP
 
 #include "Superviser.hpp"
-#include <iostream>
-#include <math.h>
-#include <cmath>
-#include <string>
 
 class Buffer {
 private:
+
+	Superviser 	* 	superviser_;
 	int 			N_;
-	Package  *	array_;
-	int 		current_;
-	Run_Type 	debug_;
-
-	Superviser * 	superviser_;
-public:
-	void 				set(Superviser * superviser, int N);
+	Package  	*	array_;
+	int 			current_;
 	
-	std::string 		stat();
+public:
 
-	void 				get(Package package);
+	//конструктор деструктор
+	Buffer();
+	~Buffer();
+
+	//сеттер
+	void 				set(Superviser * superviser, int N);
+
+	//принять посылку
+	void 				recievePackage(Package package);
+
+	//выбираем по заказу устройства f посылок из буфера
 	std::list<Package> 	select(int f);
-	int 				search();
 
+	//поиск и управление через current_
+	void 				find();
+	int 				search();
 	void 				inc();
 	void 				dec();
-	void 				find();
 
-	void				free(int i);
-
+	
+	//состояние
 	int 				capacity();
 	bool 				done();
 };

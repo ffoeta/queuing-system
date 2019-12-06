@@ -2,46 +2,47 @@
 #define SUPERVISER_HPP
 
 #include <list>
-#include <iostream>
-
-#include "Package.hpp"
-#include "RunType.hpp"
-
-#include "ResultContainer.hpp"
+#include "ResultPack.hpp"
 
 class Superviser {
 private:
-	int 			N_;
+	int 					N_;
 
-	float 			current_;
-	Run_Type 		debug_;
-	int				source_created_;
-	int 			dropped_;
-	int				sources_;
-	int				devices_;
-	int				buffers_;
+	int 					sources_; 
+	int 					buffers_;
+	int 					devices_;
 
-	std::list<Package>  packages_;
-	std::list<float>  	time_;
+	float 					current_;
+
+	int 					source_created_;
+
+	ResultPack 				data_;
+	std::list<float> 		time_;
 public:
-	void 	set(int N, int sources, int buffers, int devices, Run_Type run_t);
 
-	std::string stat();
-	Run_Type debug();
+	//конструктор
+	Superviser();
 
-	bool 	over();
-	void 	next();
+	//сеттер
+	void 		set(int N, int sources, int buffers, int devices);
 
-	float 	time();
+	//текущее время в системе
+	float 		getCurrentTime();
 
-	void 	collect(Package packages);
-	int 	add(float N);
-	void	created();
+	//добавить событие
+	void 		addEvent(float time);
 	
-	void 	stats();
-	void 	sort();
+	//обновить кол-во заявок
+	void 		addGenerated();
 
-	ResultContainer result();
+	//регистрация выбывших пакетов
+	void 		addPackage(Package p);
+	void 		droppPackage(Package p);
+
+	//состояние
+	void 		next();
+	State   	state();
+	bool 		over();
 	
 };
 

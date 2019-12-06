@@ -1,14 +1,15 @@
 #ifndef SOURCE_HPP
 #define SOURCE_HPP
 
+#include <math.h>
+#include <cmath>
 #include "Buffer.hpp"
+#include "Superviser.hpp"
 
 class Source {
 private:
 	int 		N_;
-	float 		time_;
 	Package  *  array_;
-	bool 		debug_;
 
 	float		a_;
 	float		b_;
@@ -16,26 +17,19 @@ private:
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
 public:
+	//конструктор деструктор
+	Source();
+	~Source();
+	//сеттер
+	void 	set(Superviser * superviser, Buffer * buffer, int N);
 
-	void set(Superviser * superviser, Buffer * buffer, int N);
-
-	std::string stat();
-
-	void 	notify(float time);
-
-	void 	create(Package * package);
-	void 	send(Package * package);
-
-	void 	generate();
-	void 	collect();
-
+	//отработать цикл
+	void 	work();
+	//fx
 	float  	fx();
 	void 	setConstants(float a, float b);
-
-	void 	free(Package * package);
-	void 	work();
-	
-	int 	capacity();
+	//состояние
+	int 	free();
 	bool 	done();
 };
 
