@@ -10,7 +10,9 @@
                 "/usr⁩/local⁩/Cellar⁩/qt⁩/5.13.1⁩/lib/QtQml.framework/Versions/5/Headers",
                 "/usr⁩/local⁩/Cellar⁩/qt⁩/5.13.1⁩/lib/QtGui.framework/Versions/5/Headers",
                 "/usr/local/Cellar/qt/5.13.1/lib/QtWidgets.framework/Versions/5/Headers",
-                "/usr/local/Cellar/qt/5.13.1/lib/QtCore.framework/Versions/5/Headers"
+                "/usr/local/Cellar/qt/5.13.1/lib/QtCore.framework/Versions/5/Headers",
+                "/usr/local/Cellar/qt/5.13.1/lib/QtPainter.framework/Versions/5/Headers",
+                "/usr/local/Cellar/qt/5.13.1/lib/QtQuick.framework/Versions/5/Headers"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

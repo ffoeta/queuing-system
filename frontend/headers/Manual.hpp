@@ -11,6 +11,7 @@
 
 #include "../../backend/headers/InnerAPI.hpp"
 #include "Interface.hpp"
+#include "Draw.hpp"
 
 class Manual : public QWidget
 {
@@ -20,6 +21,8 @@ private:
     void step();
     void reboot();
     void goBack();
+
+    Draw * draw_;
     
     Interface * parent_;
     QPushButton *step_;

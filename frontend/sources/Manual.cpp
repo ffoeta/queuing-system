@@ -10,7 +10,14 @@ Manual::Manual(Interface * parent) :
     this->back_ = new QPushButton(tr("BACK"));
     this->label_ = new QLabel(tr("___"));
 
-    QGridLayout *layout = new QGridLayout();
+    this->draw_ = new Draw(
+        this->parent_->getAPI()->getNSources(), 
+        this->parent_->getAPI()->getNBuffers(), 
+        this->parent_->getAPI()->getNDevices());
+
+    QGridLayout * layout = new QGridLayout();
+
+    layout->addWidget(this->draw_);
 
     layout->addWidget(this->label_);
     layout->addWidget(this->step_);
@@ -31,8 +38,13 @@ Manual::Manual(Interface * parent) :
 
 void Manual::step()
 {
+    // float * getDroppProbability();
+    // float * getAverageWaitTime();
+    // float * getAverageDeviceTime();
+    // float * getAverageInSystem();
+
     label_->setText(QString::fromStdString(
-        std::to_string(this -> parent_ -> getAPI() -> next().getCurrent())
+        std::to_string(this -> parent_ -> getAPI() -> next().getDroppProbability().at(0)  )
     ));
 }
 

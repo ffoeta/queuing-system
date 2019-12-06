@@ -1,36 +1,109 @@
 #include "../headers/Buffer.hpp"
 
-void Buffer::set(Superviser * superviser, int N) {
+//конструктор деструктор
+Buffer::Buffer() : 
+	N_(0), array_(nullptr), current_(0), superviser_(nullptr) 
+	{}
+
+Buffer::~Buffer()
+{
+	if (array_ != nullptr)
+	{
+		delete array_;
+	}
+}
+
+//сеттер
+void Buffer::set(Superviser * superviser, int N) 
+{
 	this -> superviser_ = superviser;
+
 	this -> N_ = N;
-	this -> current_ = 0;
-	this -> debug_ = this->superviser_->debug();
+
 	this -> array_ = new Package[N_];
 }
 
-std::string Buffer::stat() {
-	return("BUFFER	| total: " + std::to_string(N_) + " | free: " + std::to_string(capacity()));
-};
-
-void Buffer::get(Package package) {
-	
+//принять посылку
+void Buffer::recievePackage(Package package) 
+{
 	this->find();
 
-	if (!array_[current_].null()) {
+	if (array_[current_].isActive()) 
+	{
+		//вернулись на последнюю позицию
 		dec();
 
-		superviser_->collect(array_[current_]);
+		//приготовили к отмене и выкинули
+		// array_[current_] . setDropped(current_);
+		// superviser_ -> droppPackage(array_[current_]);
 
-		array_[current_] = package;
-	} else {
 		
+		// std::cout <<"--------------------"<<std::endl;
+		// std::cout <<"--------------------"<<std::endl;
+		// std::cout << package.getNofSource() << std::endl;
+		// std::cout << package.getArrivedBuffer() << std::endl;
+
+		// //заменили
+		// array_[current_] = package;
+
+		// std::cout <<"--------------------"<<std::endl;
+		// std::cout << array_[current_].getNofSource() << std::endl;
+		// std::cout << array_[current_].getArrivedBuffer() << std::endl;
+		// std::cout <<"--------------------"<<std::endl;
+		// std::cout <<"--------------------"<<std::endl;
+		
+	} else 
+	{
 		array_[current_] = package;
 	}
+
 	inc();
 };
 
-int Buffer::search() {
-	if (this->done()) {
+
+//выбираем по заказу устройства f посылок из буфера
+std::list<Package> Buffer::select(int f)
+{
+	std::list<Package> result(0);
+
+	int r = 0;
+
+	for (int i = 0; i < f; ++i) 
+	{
+		while(r != -1)
+		{
+			r = this->search();
+
+			if (r != -1)
+			{
+				result.push_back(array_[r]);
+				array_[r].reboot();
+			};
+
+		};
+	};
+	return result;
+};
+
+
+//поиск и управление через current_
+void Buffer::find() 
+{
+	if (!array_[current_].isActive()) 
+	{
+		return;
+	}
+	int temp = current_;
+	do{
+		inc();
+	} while ( (array_[current_].isActive()) && (current_ != temp) );
+};
+
+
+int Buffer::search() 
+{
+	if (this->done()) 
+	{
 		return -1;
 	}
 
@@ -40,9 +113,12 @@ int Buffer::search() {
 
 	for (int i = 0; i < N_; ++i)
 	{
-		if (!array_[i].null()) {
-			n = array_[i].getN();
-			if (n < value) {
+		if (array_[i].isActive()) 
+		{
+			n = array_[i].getNofSource();
+			
+			if (n < value) 
+			{
 				value = n;
 				k = i;
 			}
@@ -54,70 +130,46 @@ int Buffer::search() {
 };
 
 
-std::list<Package> Buffer::select(int f){
-
-	std::list<Package> result;
-	int r = 0;
-
-	for (int i = 0; i < f; ++i) {
-		while(r != -1){
-			r = this->search();
-
-			if (r != -1){
-				result.push_back(array_[r]);
-				free(r);
-			};
-
-		};
-	};
-	return result;
-};
-
-int Buffer::capacity(){
-	int count = 0;
-	for (int i = 0; i < N_; ++i)
+void Buffer::inc() 
+{
+	if (current_ + 1 == N_) 
 	{
-		if (array_[i].null()) {
-			count++;
-		};
-	}
-	return count;
-};
-
-void Buffer::inc() {
-	if (current_ + 1 == N_) {
 		current_ = 0;
-	} else {
+	} else 
+	{
 		current_++;
 	}
 };
 
-void Buffer::dec() {
-	if (current_ - 1 < 0) {
+void Buffer::dec() 
+{
+	if (current_ - 1 < 0) 
+	{
 		current_ = N_-1;
-	} else {
+	} else 
+	{
 		current_--;
 	}
 }
 
 
-void Buffer::find() {
-	if (array_[current_].null()) {
-		return;
+//состояние
+int Buffer::capacity()
+{
+	int count = 0;
+
+	for (int i = 0; i < N_; ++i)
+	{
+		if (!array_[i].isActive()) 
+		{
+			count++;
+		};
 	}
-	int temp = current_;
-	do{
-		inc();
-	} while ( (!array_[current_].null()) && (current_ != temp) );
+	
+	return count;
 };
 
-
-void Buffer::free(int i) {
-	array_[i].reboot();
-};
-
-bool Buffer::done() {
-	if (this->capacity() == N_)
-		return true;
-	return false;
+bool Buffer::done() 
+{
+	return (this->capacity() == N_)?true:false;
 };
