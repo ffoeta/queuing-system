@@ -77,7 +77,8 @@ void Auto::start() {
 
     auto data = this -> parent_ -> getEngine() -> _state();
 
-    std::cout << << std::endl;
+
+    // std::cout << << std::endl;
 
 
     prob_ -> setText(QString::fromStdString("drop prob: " +

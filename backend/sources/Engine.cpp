@@ -1,7 +1,6 @@
 #include "../headers/Engine.hpp"
 #include <numeric>
-
-
+#include <iostream>
 //коснтруктор деструктор
 Engine::Engine() : 
 	 n_sources_(3), n_buffers_(3), n_devices_(3), n_requests_(10000), a_(0), b_(1), l_(3)
@@ -45,6 +44,8 @@ void Engine::_reboot(int n_sources, int n_buffers, int n_devices, int n_requests
 //исполнение программы
 void Engine::_auto()
 {
+	this -> superviser_ -> __TEST__();
+	std::cout << "________________________"  << std::endl;
 	while (!superviser_ -> _over()) 
 	{
 		source_ 			-> 	_collect();
@@ -59,6 +60,7 @@ void Engine::_auto()
 
 		superviser_ 		-> 	_next();
 	}
+	this -> superviser_ -> __TEST__();
 }
 
 void Engine::_manual()

@@ -1,5 +1,5 @@
 #include "../headers/Buffer.hpp"
-
+#include <iostream>
 //конструктор деструктор
 Buffer::Buffer(Superviser * superviser, int n_buffers) : 
  	superviser_(superviser), n_buffers_(n_buffers), current_(0)

@@ -44,9 +44,9 @@ void Manual::step()
     auto buffer_picture = this -> parent_ -> getEngine() -> _picture().getBufferPicture();
     auto device_picture = this -> parent_ -> getEngine() -> _picture().getDevicePicture();
 
-    std::cout << "source: " << source_picture.at(0) << source_picture.at(1) << source_picture.at(2)  << std::endl;
-    std::cout << "buffer: " << buffer_picture.at(0) << buffer_picture.at(1) << buffer_picture.at(2)  << std::endl;
-    std::cout << "device: " << device_picture.at(0) << device_picture.at(1) << device_picture.at(2)  << std::endl;
+    std::cout << "source: (" << source_picture.at(0)<< ") (" << source_picture.at(1) << ") ("<< source_picture.at(2) <<")" << std::endl;
+    std::cout << "buffer: (" << buffer_picture.at(0)<< ") (" << buffer_picture.at(1) << ") ("<< buffer_picture.at(2) <<")" << std::endl;
+    std::cout << "device: (" << device_picture.at(0)<< ") (" << device_picture.at(1) << ") ("<< device_picture.at(2) <<")" << std::endl;
 }
 
 void Manual::reboot()

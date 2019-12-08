@@ -1,5 +1,4 @@
 #include "../headers/Package.hpp"
-
 	Package::Package() :
 		n_of_source(-1), arrived_on_buffer(-1), arrived_on_device(-1), done(-1), dropped(-1), active(false)
 	{};
@@ -30,6 +29,7 @@
 		this -> arrived_on_device = -1;
 		this -> dropped = -1;
 		this -> done = -1;
+
 	}
 
 	//геттеры

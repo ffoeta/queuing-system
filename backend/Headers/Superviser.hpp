@@ -20,6 +20,7 @@ public:
 	void 		_addEvent(float time);
 	
 	//обновить кол-во заявок
+	void 		_addDropped();
 	void 		_addGenerated();
 
 	//регистрация выбывших пакетов
@@ -29,6 +30,9 @@ public:
 	//состояние
 	void 		_next();
 	bool 		_over();
+
+	void		__TEST__();
+	void		__ADD__();
 
 	void 		_addSourcePicture(Package  *  array);
 	void 		_addBufferPicture(Package  *  array);
@@ -46,6 +50,9 @@ private:
 	float 		_getAverageWaitTime(int i);
 	float 		_getAverageSpendOnDevice(int i);
 	float 		_getAverageSpendInSystem(int i);
+
+	float test;
+	int test_c;
 
 	int 					n_requests_;
 	int 					n_sources_; 

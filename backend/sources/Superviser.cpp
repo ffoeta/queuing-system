@@ -18,6 +18,19 @@ Superviser::Superviser(int n_sources, int n_buffers, int n_devices, int n_reques
     source_picture_    				=   new std::vector<int>[n_sources];
 	buffer_picture_				    =   new std::vector<int>[n_buffers];
 	device_picture_				    =   new std::vector<int>[n_devices];
+
+    for (int i = 0; i < n_sources; i ++)
+    {
+        generated_request_per_source_[i] = 0;
+        dropped_request_per_source_[i] = 0;
+
+        waited_on_buffer_per_source_[i].clear();
+        spend_on_device_[i].clear();
+        spend_in_system_[i].clear();
+    }
+
+    test = 0;
+    test_c = 0;
 }
 
 //текущее время в системе
@@ -37,6 +50,27 @@ void Superviser::_addEvent(float time)
 void Superviser::_addGenerated() 
 {
 	this -> total_packages_++;
+}
+
+void Superviser::__ADD__() 
+{
+	test_c++;
+}
+
+void Superviser::__TEST__() 
+{
+    std:: cout << total_packages_ << std::endl; 
+    std:: cout << generated_request_per_source_[0] << std::endl;
+    std:: cout << generated_request_per_source_[1] << std::endl;
+    std:: cout << generated_request_per_source_[2] << std::endl;
+
+    std:: cout << dropped_request_per_source_[0] << std::endl;
+    std:: cout << dropped_request_per_source_[1] << std::endl;
+    std:: cout << dropped_request_per_source_[2] << std::endl;
+
+    std::cout << test_c << std::endl;
+    // std:: cout << generated_request_per_source_[1] << std::endl;
+    // std:: cout << generated_request_per_source_[2] << std::endl;
 }
 
 //состояние
@@ -59,6 +93,11 @@ void Superviser::_addPackage(Package * package)
     float arrived_buffer    =   package -> _getArrivedBuffer();
     float arrived_device    =   package -> _getArrivedDevice();
     float done              =   package -> _getDone();
+
+    if (n == 0)
+    {
+        __ADD__();
+    } else 
 
     this -> generated_request_per_source_[n]++;
     this -> waited_on_buffer_per_source_[n].push_back(arrived_device - arrived_buffer);
