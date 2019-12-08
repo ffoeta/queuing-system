@@ -5,10 +5,10 @@
 Engine::Engine() : 
 	 n_sources_(3), n_buffers_(3), n_devices_(3), n_requests_(10000), a_(0), b_(1), l_(3)
 {
-    this -> superviser_ = new Superviser(3, 3, 3, 1000);
-    this -> buffer_     = new Buffer(superviser_, 3);
-    this -> source_     = new Source(superviser_, buffer_, 3, 0, 1);
-	this -> device_     = new Device(superviser_, buffer_, 3, 3);
+    this -> superviser_ = new Superviser(n_sources_, n_buffers_, n_devices_, n_requests_);
+    this -> buffer_     = new Buffer(superviser_, n_buffers_);
+    this -> source_     = new Source(superviser_, buffer_, n_sources_, a_, b_);
+	this -> device_     = new Device(superviser_, buffer_, n_devices_, l_);
 }
 
 
