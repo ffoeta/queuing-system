@@ -7,30 +7,28 @@
 #include "Superviser.hpp"
 
 class Source {
+public:
+	//конструктор 
+	Source(Superviser * superviser, Buffer * buffer, int n_sources, float a, float b);
+
+	//отработать цикл
+	void 	_collect();
+	void 	_produce();
+	//fx
+	float  	_fx();
+	//состояние
+	void 	_picture();
+	bool 	_done();
+	
 private:
-	int 		N_;
-	Package  *  array_;
+	int 		n_sources_;
+	Package  *  source_packages_;
 
 	float		a_;
 	float		b_;
 
 	Buffer 		* 	buffer_;
 	Superviser 	* 	superviser_;
-public:
-	//конструктор деструктор
-	Source();
-	~Source();
-	//сеттер
-	void 	set(Superviser * superviser, Buffer * buffer, int N);
-
-	//отработать цикл
-	void 	work();
-	//fx
-	float  	fx();
-	void 	setConstants(float a, float b);
-	//состояние
-	int 	free();
-	bool 	done();
 };
 
 

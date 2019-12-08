@@ -2,48 +2,72 @@
 #define SUPERVISER_HPP
 
 #include <list>
-#include "ResultPack.hpp"
+#include "Package.hpp"
+
+#include "Picture.hpp"
+#include "State.hpp"
 
 class Superviser {
-private:
-	int 					N_;
-
-	int 					sources_; 
-	int 					buffers_;
-	int 					devices_;
-
-	float 					current_;
-
-	int 					source_created_;
-
-	ResultPack 				data_;
-	std::list<float> 		time_;
 public:
 
 	//конструктор
-	Superviser();
-
-	//сеттер
-	void 		set(int N, int sources, int buffers, int devices);
+	Superviser(int n_sources, int n_buffers, int n_devices, int n_requests);
 
 	//текущее время в системе
-	float 		getCurrentTime();
+	float 		_getCurrentTime();
 
 	//добавить событие
-	void 		addEvent(float time);
+	void 		_addEvent(float time);
 	
 	//обновить кол-во заявок
-	void 		addGenerated();
+	void 		_addGenerated();
 
 	//регистрация выбывших пакетов
-	void 		addPackage(Package p);
-	void 		droppPackage(Package p);
+	void 		_addPackage(Package * p);
+	void 		_droppPackage(Package * p);
 
 	//состояние
-	void 		next();
-	State   	state();
-	bool 		over();
-	
+	void 		_next();
+	bool 		_over();
+
+	void 		_addSourcePicture(Package  *  array);
+	void 		_addBufferPicture(Package  *  array);
+	void 		_addDevicePicture(Package  *  array);
+
+	State 		_sample();
+	Picture		_picture();
+
+
+
+private:
+
+	//расчеты
+	float 		_getAverageFaillure(int i);
+	float 		_getAverageWaitTime(int i);
+	float 		_getAverageSpendOnDevice(int i);
+	float 		_getAverageSpendInSystem(int i);
+
+	int 					n_requests_;
+	int 					n_sources_; 
+	int 					n_buffers_;
+	int 					n_devices_;
+	float 					current_;
+
+	int 					total_packages_;
+	std::list<float> 		time_;
+
+	int 							* 		generated_request_per_source_;
+	int 							* 		dropped_request_per_source_;
+
+    std::vector<float>	 			* 		waited_on_buffer_per_source_;
+	std::vector<float>				* 		spend_on_device_;
+    std::vector<float>				* 		spend_in_system_;
+
+	std::vector<int>				*		source_picture_;
+	std::vector<int>				*		buffer_picture_;
+	std::vector<int>				*		device_picture_;
+
+
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include "../headers/Manual.hpp"
-
+#include <iostream>
 
 Manual::Manual(Interface * parent) :
     parent_(parent)
@@ -11,9 +11,9 @@ Manual::Manual(Interface * parent) :
     this->label_ = new QLabel(tr("___"));
 
     this->draw_ = new Draw(
-        this->parent_->getAPI()->getNSources(), 
-        this->parent_->getAPI()->getNBuffers(), 
-        this->parent_->getAPI()->getNDevices());
+        this->parent_->getEngine()->_getNSources(), 
+        this->parent_->getEngine()->_getNBuffers(), 
+        this->parent_->getEngine()->_getNDevices());
 
     QGridLayout * layout = new QGridLayout();
 
@@ -37,20 +37,21 @@ Manual::Manual(Interface * parent) :
 }
 
 void Manual::step()
-{
-    // float * getDroppProbability();
-    // float * getAverageWaitTime();
-    // float * getAverageDeviceTime();
-    // float * getAverageInSystem();
+{   
+    this -> parent_ -> getEngine() -> _manual();
 
-    label_->setText(QString::fromStdString(
-        std::to_string(this -> parent_ -> getAPI() -> next().getDroppProbability().at(0)  )
-    ));
+    auto source_picture = this -> parent_ -> getEngine() -> _picture().getSourcePicture();
+    auto buffer_picture = this -> parent_ -> getEngine() -> _picture().getBufferPicture();
+    auto device_picture = this -> parent_ -> getEngine() -> _picture().getDevicePicture();
+
+    std::cout << "source: " << source_picture.at(0) << source_picture.at(1) << source_picture.at(2)  << std::endl;
+    std::cout << "buffer: " << buffer_picture.at(0) << buffer_picture.at(1) << buffer_picture.at(2)  << std::endl;
+    std::cout << "device: " << device_picture.at(0) << device_picture.at(1) << device_picture.at(2)  << std::endl;
 }
 
 void Manual::reboot()
 {
-    this -> parent_ -> reboot();
+    this -> parent_ -> rebootEngine();
     label_->setText(QString::fromStdString("__"));
 }   
 

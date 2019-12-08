@@ -1,72 +1,186 @@
 #include "../headers/Superviser.hpp"
+#include <iostream>
+#include <numeric>
+#include <algorithm>
 
 //конструктор
-Superviser::Superviser() :
-	N_(0), sources_(0), buffers_(0), devices_(0), current_(0), source_created_(0),data_()
+Superviser::Superviser(int n_sources, int n_buffers, int n_devices, int n_requests) :
+	n_requests_(n_requests), n_sources_(n_sources), n_buffers_(n_buffers), 
+	n_devices_(n_devices), current_(0), total_packages_(0), time_(0)
 {
-	time_.clear();
-}
+	generated_request_per_source_   =   new int[n_sources]; 
+    dropped_request_per_source_     =   new int[n_sources];
 
-//сеттер
-void Superviser::set(int N, int sources, int buffers, int devices) 
-{
-	this -> N_ = N; 
+    waited_on_buffer_per_source_    =   new std::vector<float>[n_sources]; 
+    spend_on_device_                =   new std::vector<float>[n_sources];
+    spend_in_system_                =   new std::vector<float>[n_sources];
 
-	this -> sources_ = sources; 
-	this -> buffers_ = buffers;
-	this -> devices_ = devices;
-
-	this -> current_ = 0;
-	this -> source_created_ = 0;
-
-	this -> data_.set(sources_);
+    source_picture_    				=   new std::vector<int>[n_sources];
+	buffer_picture_				    =   new std::vector<int>[n_buffers];
+	device_picture_				    =   new std::vector<int>[n_devices];
 }
 
 //текущее время в системе
-float Superviser::getCurrentTime() 
+float Superviser::_getCurrentTime() 
 {
 	return this -> current_;
 }
 
 //добавить событие
-void Superviser::addEvent(float time) 
+void Superviser::_addEvent(float time) 
 {
 	this->time_.push_back(time);
 }
 
 
 //обновить кол-во заявок
-void Superviser::addGenerated() 
+void Superviser::_addGenerated() 
 {
-	this -> source_created_++;
-}
-
-
-//регистрирация выбывших пакетов
-void Superviser::addPackage(Package p)
-{
-	this -> data_.addPackage(p);
-}
-
-void Superviser::droppPackage(Package p)
-{
-	this -> data_.droppPackage(p);
+	this -> total_packages_++;
 }
 
 //состояние
-void Superviser::next() 
+void Superviser::_next() 
 {
 	this->time_.sort();
 	this->current_ = this->time_.front();
 	this->time_.pop_front();
 };
 
-State Superviser::state()
+bool Superviser::_over()
+{   
+	return (total_packages_ < n_requests_)?false:true;
+};
+
+//зарегистрировать пакеты
+void Superviser::_addPackage(Package * package) 
 {
-	return this -> data_.sample();
+    int   n                 =   package -> _getNofSource() - 1;
+    float arrived_buffer    =   package -> _getArrivedBuffer();
+    float arrived_device    =   package -> _getArrivedDevice();
+    float done              =   package -> _getDone();
+
+    this -> generated_request_per_source_[n]++;
+    this -> waited_on_buffer_per_source_[n].push_back(arrived_device - arrived_buffer);
+    this -> spend_on_device_[n].push_back(done - arrived_device);
+    this -> spend_in_system_[n].push_back(done - arrived_buffer);
 }
 
-bool Superviser::over()
+void Superviser::_droppPackage(Package * package) 
 {
-	return (source_created_ < N_)?false:true;
-};
+    int n = package -> _getNofSource() - 1;
+    this -> dropped_request_per_source_[n]++;
+}
+
+//расчеты статистики
+
+float Superviser::_getAverageFaillure(int i) 
+{
+    if (generated_request_per_source_[i] == 0) return 0;
+    
+    return dropped_request_per_source_[i] / generated_request_per_source_[i];
+}
+
+float Superviser::_getAverageWaitTime(int i)
+{   
+    if (waited_on_buffer_per_source_[i].empty()) return 0;
+
+    float temp = std::accumulate(waited_on_buffer_per_source_[i].begin(), waited_on_buffer_per_source_[i].end(), 0);
+
+    return  temp / waited_on_buffer_per_source_[i].size();
+}
+
+float Superviser::_getAverageSpendOnDevice(int i)
+{
+    if (spend_on_device_[i].empty()) return 0;
+
+    auto temp = std::accumulate(spend_on_device_[i].begin(), spend_on_device_[i].end(), 0);
+       
+    return temp / spend_on_device_[i].size();
+}
+
+float Superviser::_getAverageSpendInSystem(int i)
+{
+    if (spend_in_system_[i].empty()) return 0;
+
+    auto temp =  std::accumulate(spend_in_system_[i].begin(), spend_in_system_[i].end(), 0);
+
+    return  temp / spend_in_system_[i].size();
+}
+
+
+void 	Superviser::_addSourcePicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_sources_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    source_picture_ -> swap(temp);
+}
+
+void 	Superviser::_addBufferPicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_buffers_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    buffer_picture_ -> swap(temp);
+}
+
+void 	Superviser::_addDevicePicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_sources_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    device_picture_ -> swap(temp);
+}
+
+//генерация статистики
+State Superviser::_sample() 
+{
+    std::vector<float> average_probability_of_failure;
+    std::vector<float> average_waited_on_buffer_per_source;
+    std::vector<float> average_spend_on_device;
+    std::vector<float> average_spend_in_system;
+
+    //средние значения и шанс отказа
+    for (int i = 0; i < n_sources_; i++)
+    {        
+        average_probability_of_failure.push_back(this -> _getAverageFaillure(i));
+        average_waited_on_buffer_per_source.push_back(this -> _getAverageWaitTime(i));
+        average_spend_on_device.push_back(this -> _getAverageSpendOnDevice(i));
+        average_spend_in_system.push_back(this -> _getAverageSpendInSystem(i));
+    }
+
+    return State(average_probability_of_failure, average_waited_on_buffer_per_source,
+        average_spend_on_device, average_spend_in_system);
+}
+
+
+
+Picture	Superviser::_picture()
+{
+    return Picture(source_picture_, buffer_picture_, device_picture_);
+}

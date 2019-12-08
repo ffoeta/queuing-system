@@ -8,40 +8,35 @@
 
 class Device 
 {
-private:
-	int 			N_;
-
-	int 			current_;
-	float 			l_;
-
-	Package 	* 	array_;
-
-	Buffer 		* 	buffer_;
-	Superviser 	* 	superviser_;
-	
 public:
-	//констрктор деструктор
-	Device();
-	~Device();
-
-	//сеттер
-	void 	set(Superviser * superviser, Buffer * buffer, int N);
+	//констрктор 
+	Device(Superviser * superviser, Buffer * buffer, int n_devices, float l);
 
 	//управление через current_
-	void 	find();
-	void 	inc();
-	void 	dec();
+	void 	_findPlaceForNewPackage();
+	void 	_inc();
+	void 	_dec();
 
 	//отработать цикл
-	void 	work();
+	void 	_request();
+	void 	_exec();
 	
 	//fx	
-	float 	fx();
-	void 	setConstant(float l);
+	float 	_fx();
 
 	//состояние
-	int 	capacity();
-	bool 	done();
+	void	_picture();
+	int 	_free();
+	
+
+private:
+	int 			n_devices_;
+	float 			l_;
+	int 			current_;
+
+	Package 	* 	device_packages_;
+	Buffer 		* 	buffer_;
+	Superviser 	* 	superviser_;
 };
 
 

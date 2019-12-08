@@ -1,95 +1,65 @@
 #include "../headers/Source.hpp"
-
+#include <iostream>
 //конструктов
-Source::Source() : 
-	N_(0), a_(0), b_(0), array_(nullptr), buffer_(nullptr), superviser_(nullptr)
-	{}
-
-Source::~Source()
-{
-	if (array_ != nullptr)
+Source::Source(Superviser * superviser, Buffer * buffer, int n_sources, float a, float b) : 
+	superviser_(superviser), buffer_(buffer), n_sources_(n_sources), 
+	a_(a), b_(b)
 	{
-		delete array_;
+		source_packages_ = new Package[n_sources];
 	}
-}
-
-//сеттер
-void Source::set(Superviser * superviser, Buffer * buffer, int N) 
-{
-	superviser_ = superviser;
-
-	buffer_ = buffer;
-	N_ = N;
-
-	array_ = new Package[N_];
-}
 
 //отработать цикл
-void Source::work()
+
+void Source::_produce() 
 {
-	float time = superviser_->getCurrentTime();
+	float time = this -> superviser_ -> _getCurrentTime();
 
-	for (int i = 0; i < N_; i++) 
+	for (int i = 0; i < n_sources_; i++)
 	{
-		if (!array_[i].isActive()) continue;
-
-		if (array_[i].getArrivedBuffer() == time) 
+		if (!source_packages_[i]._isActive())
 		{
-			//добавили в счетчик и отправили
-			this->superviser_ -> addGenerated();
-			this->buffer_ -> recievePackage(array_[i]);
-
-			//обнулили
-			array_[i].reboot();
-		}
-	}
-
-	if (this->superviser_->over()) return;
-
-	for (int i = 0; i < N_; i++) 
-	{
-		if (!array_[i].isActive()) 
-		{	
 			//активировали
-			array_[i].activate(i+1, time + this->fx());
+			source_packages_[i]._activate(i+1, time + this->_fx());
 
-			//	добавили время
-			this->superviser_->addEvent(time + this->fx());
+			//	добавили время в очередь
+			this->superviser_->_addEvent(source_packages_[i]._getArrivedBuffer());
 		}
 	}
 }
 
+void Source::_collect()
+{
+	float time = this -> superviser_ -> _getCurrentTime();
+
+	// std:: cout << << std::endl;
+
+	for (int i = 0; i < n_sources_; i++) 
+	{
+		if (source_packages_[i]._isActive())
+		{
+			if (source_packages_[i]._getArrivedBuffer() == time) 
+			{
+				//добавили в счетчик и отправили
+				this->superviser_ -> _addGenerated();
+				this->buffer_ -> _recievePackage(source_packages_[i]);
+
+				//обнулили
+				source_packages_[i]._reboot();
+			}
+
+		} 
+	}
+}
+
+
 //fx
-float Source::fx()
+float Source::_fx()
 {
 	return a_+(b_-a_)*(rand()%100)/100;;
 }
 
-void Source::setConstants(float a, float b) 
-{
-	this->a_ = a;
-	this->b_ = b;
-}
-
 //состояние
-int Source::free()
+void Source::_picture()
 {
-	
-	int count = 0;
-
-	for (int i = 0; i < N_; ++i) 
-	{
-		if (!array_[i].isActive()) 
-		{
-			count++;
-		}
-	};
-	
-	return count;
-
-};
-
-bool Source::done() 
-{
-	return (this->free() == N_)?true:false;
+	this -> superviser_ -> _addSourcePicture(this -> source_packages_);
 };

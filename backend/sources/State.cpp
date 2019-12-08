@@ -8,22 +8,23 @@
         average_spend_on_device_(average_spend_on_device), average_spend_in_system_(average_spend_in_system)
     {};
 
-    std::vector<float> State::getDroppProbability() 
+    std::vector<float> State::_getDroppProbability() 
     {
         return this -> average_probability_of_failure_;
     }
 
-    std::vector<float> State::getAverageWaitTime() 
+    std::vector<float> State::_getAverageWaitTime() 
     {
         return this -> average_waited_on_buffer_per_source_;
     }
 
-    std::vector<float> State::getAverageDeviceTime() 
+    std::vector<float> State::_getAverageDeviceTime() 
     {
         return this -> average_spend_on_device_;
     }
 
-    std::vector<float> State::getAverageInSystem() 
+    std::vector<float> State::_getAverageInSystem() 
     {
         return this -> average_spend_in_system_;
     }
+    

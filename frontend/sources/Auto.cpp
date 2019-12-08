@@ -20,12 +20,11 @@ void Auto::init() {
 }
 
 void Auto::reboot() {
-    this -> parent_ -> reboot();
+    this -> parent_ -> getEngine() -> _reboot();
     prob_       -> setText(QString::fromStdString("drop prob: _"));
-    wait_     -> setText(QString::fromStdString("average wait: _"));
+    wait_       -> setText(QString::fromStdString("average wait: _"));
     device_     -> setText(QString::fromStdString("average device: _"));
     system_     -> setText(QString::fromStdString("average system: _"));
-
 }
 
 void Auto::initializeButtons() {
@@ -73,23 +72,29 @@ void Auto::initializeForm() {
 }
 
 void Auto::start() {
-    auto run = this -> parent_ -> getAPI() -> run();
 
-    // prob_ -> setText(QString::fromStdString("drop prob: " +
-    //     std::to_string(run.getDroppProbability().at(0))
-    // ));
+    this -> parent_ -> getEngine() -> _auto();
 
-    // wait_ -> setText(QString::fromStdString("average wait: " +
-    //     std::to_string(run.getAverageWaitTime().at(0))
-    // ));
+    auto data = this -> parent_ -> getEngine() -> _state();
 
-    // device_ -> setText(QString::fromStdString("average device: " +
-    //     std::to_string(run.getAverageDeviceTime().at(0))
-    // ));
+    std::cout << << std::endl;
 
-    // system_ -> setText(QString::fromStdString("average system: " +
-    //     std::to_string(run.getAverageInSystem().at(0))
-    // ));
+
+    prob_ -> setText(QString::fromStdString("drop prob: " +
+        std::to_string(data._getDroppProbability().at(0))
+    ));
+
+    wait_ -> setText(QString::fromStdString("average wait: " +
+        std::to_string(data._getAverageWaitTime().at(0))
+    ));
+
+    device_ -> setText(QString::fromStdString("average device: " +
+        std::to_string(data._getAverageDeviceTime().at(0))
+    ));
+
+    system_ -> setText(QString::fromStdString("average system: " +
+        std::to_string(data._getAverageInSystem().at(0))
+    ));
 }
 
 void Auto::goBack() {

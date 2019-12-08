@@ -1,88 +1,87 @@
 #include "../headers/Package.hpp"
 
-
 	Package::Package() :
-		n_of_source(0), arrived_on_buffer(0), arrived_on_device(0), done(0), dropped(0), active(false)
+		n_of_source(-1), arrived_on_buffer(-1), arrived_on_device(-1), done(-1), dropped(-1), active(false)
 	{};
 
 	//управление
 
-	bool 	Package::isActive() 
+	bool 	Package::_isActive() 
 	{
 		return this -> active;
 	}
 
-	void 	Package::activate(int n, float time) 
+	void 	Package::_activate(int n, float time) 
 	{
-		this -> reboot();
+		this -> _reboot();
 
-		this -> setNofSource(n);
-		this -> setArrivedBuffer(time);
+		this -> _setNofSource(n);
+		this -> _setArrivedBuffer(time);
 
 		this -> active = true;
 	}
 
-	void 	Package::reboot() 
+	void 	Package::_reboot() 
 	{
 		this -> active = false;
 		
-		this -> n_of_source = 0;
-		this -> arrived_on_buffer = 0;
-		this -> arrived_on_device = 0;
-		this -> dropped = 0;
-		this -> done = 0;
+		this -> n_of_source = -1;
+		this -> arrived_on_buffer = -1;
+		this -> arrived_on_device = -1;
+		this -> dropped = -1;
+		this -> done = -1;
 	}
 
 	//геттеры
 
-	int 	Package::getNofSource() 
+	int 	Package::_getNofSource() 
 	{
 		return this -> n_of_source;
 	}
 
-	float 	Package::getArrivedBuffer() 
+	float 	Package::_getArrivedBuffer() 
 	{
 		return this -> arrived_on_buffer;
 	}
 
-	float 	Package::getArrivedDevice() 
+	float 	Package::_getArrivedDevice() 
 	{
 		return this -> arrived_on_device;
 	}
 
-	float 	Package::getDone() 
+	float 	Package::_getDone() 
 	{
 		return this -> done;
 	}
 
-	float 	Package::getDropped() 
+	float 	Package::_getDropped() 
 	{
 		return this -> dropped;
 	}
 
 	//сеттеры
 
-	void 	Package::setNofSource(int n) 
+	void 	Package::_setNofSource(int n) 
 	{
 		this -> n_of_source = n;
 	}
 
-	void 	Package::setArrivedBuffer(float time)
+	void 	Package::_setArrivedBuffer(float time)
 	{
 		this -> arrived_on_buffer = time;
 	}
 
-	void 	Package::setArrivedDevice(float time) 
+	void 	Package::_setArrivedDevice(float time) 
 	{
 		this -> arrived_on_device = time;
 	}
 
-	void 	Package::setDone(float time) 
+	void 	Package::_setDone(float time) 
 	{
 		this -> done = time;
 	}
 
-	void 	Package::setDropped(float time) 
+	void 	Package::_setDropped(float time) 
 	{
 		this -> dropped = time;
 	}

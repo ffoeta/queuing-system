@@ -1,138 +1,112 @@
 #include "../headers/Buffer.hpp"
 
 //конструктор деструктор
-Buffer::Buffer() : 
-	N_(0), array_(nullptr), current_(0), superviser_(nullptr) 
-	{}
-
-Buffer::~Buffer()
-{
-	if (array_ != nullptr)
+Buffer::Buffer(Superviser * superviser, int n_buffers) : 
+ 	superviser_(superviser), n_buffers_(n_buffers), current_(0)
 	{
-		delete array_;
+		this -> buffer_packages_ = new Package[n_buffers];
 	}
-}
-
-//сеттер
-void Buffer::set(Superviser * superviser, int N) 
-{
-	this -> superviser_ = superviser;
-
-	this -> N_ = N;
-
-	this -> array_ = new Package[N_];
-}
 
 //принять посылку
-void Buffer::recievePackage(Package package) 
+void Buffer::_recievePackage(Package package) 
 {
-	this->find();
+	this->_findPlaceToInsertPackage();
 
-	if (array_[current_].isActive()) 
+	if (buffer_packages_[current_]._isActive()) 
 	{
-		//вернулись на последнюю позицию
-		dec();
-
-		//приготовили к отмене и выкинули
-		// array_[current_] . setDropped(current_);
-		// superviser_ -> droppPackage(array_[current_]);
-
-		
-		// std::cout <<"--------------------"<<std::endl;
-		// std::cout <<"--------------------"<<std::endl;
-		// std::cout << package.getNofSource() << std::endl;
-		// std::cout << package.getArrivedBuffer() << std::endl;
-
-		// //заменили
-		// array_[current_] = package;
-
-		// std::cout <<"--------------------"<<std::endl;
-		// std::cout << array_[current_].getNofSource() << std::endl;
-		// std::cout << array_[current_].getArrivedBuffer() << std::endl;
-		// std::cout <<"--------------------"<<std::endl;
-		// std::cout <<"--------------------"<<std::endl;
-		
-	} else 
-	{
-		array_[current_] = package;
+		this -> superviser_ -> _droppPackage(&buffer_packages_[current_]);
 	}
+		
+	buffer_packages_[current_] = package;
 
-	inc();
+	_inc();
 };
 
 
 //выбираем по заказу устройства f посылок из буфера
-std::list<Package> Buffer::select(int f)
+std::list<Package> Buffer::_sendPackages(int f)
 {
-	std::list<Package> result(0);
+	int ready_to_give = this -> n_buffers_ - this -> _free();
+	int asked_for = f;
 
-	int r = 0;
+	std::list<Package> result;
 
-	for (int i = 0; i < f; ++i) 
+	if (ready_to_give == 0)
 	{
-		while(r != -1)
+		return result;
+	}
+
+	int let_take;
+
+	if (asked_for > ready_to_give)
+	{
+		let_take = ready_to_give;
+	} else if (asked_for <= ready_to_give)
+	{
+		let_take = asked_for;
+	};
+
+	for (int i = 0; i < let_take; i++) 
+	{
+		int k = this -> _chooseHighestPackagePrior();
+		while (!buffer_packages_[current_]._isActive() && (buffer_packages_[current_]._getNofSource() != k))
 		{
-			r = this->search();
-
-			if (r != -1)
-			{
-				result.push_back(array_[r]);
-				array_[r].reboot();
-			};
-
-		};
+			_inc();
+		}
+		result.push_back(buffer_packages_[current_]);
 	};
 	return result;
 };
 
 
 //поиск и управление через current_
-void Buffer::find() 
+void Buffer::_findPlaceToInsertPackage() 
 {
-	if (!array_[current_].isActive()) 
+	if (!buffer_packages_[current_]._isActive()) 
 	{
 		return;
 	}
-	int temp = current_;
+	int origin = current_;
 	do{
-		inc();
-	} while ( (array_[current_].isActive()) && (current_ != temp) );
+		_inc();
+	} while  ((current_ != origin) && (buffer_packages_[current_]._isActive()));
 };
 
-
-int Buffer::search() 
+int Buffer::_chooseHighestPackagePrior() 
 {
-	if (this->done()) 
+	std::vector<float> temp;
+
+	for (int i = 0; i < n_buffers_; ++i)
+	{
+		if (buffer_packages_[i]._isActive())
+		{
+			temp.push_back(buffer_packages_[i]._getNofSource());
+		}
+	}
+
+	if (temp.size() == 0)
 	{
 		return -1;
 	}
 
-	int value = RAND_MAX;
-	int k = -1;
-	int n = -1;
-
-	for (int i = 0; i < N_; ++i)
+	int index = 0;
+	int min = temp.at(0);
+	for (int i = 0; i < temp.size(); i++)
 	{
-		if (array_[i].isActive()) 
+		if (temp[i] < min)
 		{
-			n = array_[i].getNofSource();
-			
-			if (n < value) 
-			{
-				value = n;
-				k = i;
-			}
+			min = temp[i];
+			index = i;
 		}
-
 	}
 
-	return k;
+	return min;
 };
 
 
-void Buffer::inc() 
+void Buffer::_inc() 
 {
-	if (current_ + 1 == N_) 
+	if (current_ + 1 == n_buffers_) 
 	{
 		current_ = 0;
 	} else 
@@ -141,11 +115,11 @@ void Buffer::inc()
 	}
 };
 
-void Buffer::dec() 
+void Buffer::_dec() 
 {
 	if (current_ - 1 < 0) 
 	{
-		current_ = N_-1;
+		current_ = n_buffers_-1;
 	} else 
 	{
 		current_--;
@@ -154,13 +128,18 @@ void Buffer::dec()
 
 
 //состояние
-int Buffer::capacity()
+void Buffer::_picture()
+{
+	this -> superviser_ -> _addBufferPicture(this -> buffer_packages_);
+}
+
+int Buffer::_free()
 {
 	int count = 0;
 
-	for (int i = 0; i < N_; ++i)
+	for (int i = 0; i < n_buffers_; ++i)
 	{
-		if (!array_[i].isActive()) 
+		if (!buffer_packages_[i]._isActive()) 
 		{
 			count++;
 		};
@@ -169,7 +148,7 @@ int Buffer::capacity()
 	return count;
 };
 
-bool Buffer::done() 
+bool Buffer::_done() 
 {
-	return (this->capacity() == N_)?true:false;
+	return (this->_free() == n_buffers_)?true:false;
 };
