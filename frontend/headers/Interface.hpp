@@ -11,33 +11,32 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <iostream>
-#include "../../backend/headers/InnerAPI.hpp"
+#include "../../backend/headers/Engine.hpp"
 
 
 class Interface : public QWidget
 {
-private:
-    QStackedWidget * stackedWidget;
-    
-    QWidget *autoWidget;
-    QWidget *mainMenuWidget;
-    QWidget *manualWidget;
-    QWidget *settingsWidget;
-
-    InnerAPI * api_;
 public:
     Interface();
+
+    Engine * getEngine();
 
     void goToManual();
     void goToMenu();
     void goToAuto();
     void goToSettings();
 
-    InnerAPI * getAPI();
+    void rebootEngine();
 
-    void reboot();
-    void setAPI(int n_soruces, int n_buffers, int n_devices, int n_requests, float a, float b, float l);
-    void selectMode(Run_Type run_type);
+private:
+    Engine *engine;
+    
+    QStackedWidget * stackedWidget;
+    QWidget *autoWidget;
+    QWidget *mainMenuWidget;
+    QWidget *manualWidget;
+    QWidget *settingsWidget;
+
 };
 
 #endif

@@ -11,9 +11,9 @@ Manual::Manual(Interface * parent) :
     this->label_ = new QLabel(tr("___"));
 
     this->draw_ = new Draw(
-        this->parent_->getAPI()->getNSources(), 
-        this->parent_->getAPI()->getNBuffers(), 
-        this->parent_->getAPI()->getNDevices());
+        this->parent_->getEngine()->_getNSources(), 
+        this->parent_->getEngine()->_getNBuffers(), 
+        this->parent_->getEngine()->_getNDevices());
 
     QGridLayout * layout = new QGridLayout();
 
@@ -38,19 +38,14 @@ Manual::Manual(Interface * parent) :
 
 void Manual::step()
 {
-    // float * getDroppProbability();
-    // float * getAverageWaitTime();
-    // float * getAverageDeviceTime();
-    // float * getAverageInSystem();
-
     label_->setText(QString::fromStdString(
-        std::to_string(this -> parent_ -> getAPI() -> next().getDroppProbability().at(0)  )
+        std::to_string(this -> parent_ -> getEngine() -> _manual()._getDroppProbability().at(0)  )
     ));
 }
 
 void Manual::reboot()
 {
-    this -> parent_ -> reboot();
+    this -> parent_ -> rebootEngine();
     label_->setText(QString::fromStdString("__"));
 }   
 

@@ -6,24 +6,24 @@ public:
 
 	Package();
 
-	void 	activate(int n, float time);
-	bool 	isActive();
-	void 	reboot();
+	void 	_activate(int n, float time);
+	bool 	_isActive();
+	void 	_reboot();
 
-	int 	getNofSource();
-	float 	getArrivedBuffer();
-	float 	getArrivedDevice();
-	float 	getDone();
-	float 	getDropped();
+	int 	_getNofSource();
+	float 	_getArrivedBuffer();
+	float 	_getArrivedDevice();
+	float 	_getDone();
+	float 	_getDropped();
 
-	void 	setArrivedDevice(float time);
-	void 	setDone(float time);
-	void 	setDropped(float time);
+	void 	_setArrivedDevice(float time);
+	void 	_setDone(float time);
+	void 	_setDropped(float time);
 
 private:
 
-	void 	setNofSource(int n);
-	void 	setArrivedBuffer(float time);	
+	void 	_setNofSource(int n);
+	void 	_setArrivedBuffer(float time);	
 
 	int 			n_of_source;
 	float			arrived_on_buffer;

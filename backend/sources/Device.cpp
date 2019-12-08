@@ -1,34 +1,15 @@
 #include "../headers/Device.hpp"
 
 //конструктор деструктор
-Device::Device() :
-	N_(0), current_(0), l_(0), superviser_(nullptr), buffer_(nullptr), array_(nullptr)
+Device::Device(Superviser * superviser, Buffer * buffer, int n_devices, float l) :
+	superviser_(superviser), buffer_(buffer), n_devices_(n_devices), l_(l), array_(new Package[n_devices_]), current_(0)
 	{};
 
-Device::~Device()
-{
-	if (array_ != nullptr)
-	{
-		delete array_;
-	}
-}
-
-//сеттер
-void Device::set(Superviser * superviser, Buffer * buffer, int N) 
-{
-	this -> superviser_ = superviser;
-	this -> buffer_ = buffer;
-
-	this -> N_ = N; 
-
-	this -> l_ = 0;
-	array_ = new Package[N_];
-};
 
 // управление через current_
-void Device::find() 
+void Device::_find() 
 {
-	if (!array_[current_].isActive()) 
+	if (!array_[current_]._isActive()) 
 	{
 		return;
 	}
@@ -36,13 +17,13 @@ void Device::find()
 	int temp = current_;
 
 	do{
-		inc();
-	} while ( (array_[current_].isActive()) && (current_ != temp) );
+		_inc();
+	} while ( (array_[current_]._isActive()) && (current_ != temp) );
 };
 
-void Device::inc() 
+void Device::_inc() 
 {
-	if (current_ + 1 == N_) 
+	if (current_ + 1 == n_devices_) 
 	{
 		current_ = 0;
 	} else 
@@ -51,11 +32,11 @@ void Device::inc()
 	}
 };
 
-void Device::dec() 
+void Device::_dec() 
 {
 	if (current_ - 1 < 0) 
 	{
-		current_ = N_-1;
+		current_ = n_devices_-1;
 	} else
 	{
 		current_--;
@@ -63,21 +44,23 @@ void Device::dec()
 }
 
 //отработать цикл
-void Device::work() 
+void Device::_work() 
 {
-	int time = this->superviser_->getCurrentTime();
+	if (this->superviser_->_over()) return;
 
-	for (int i = 0; i < N_; ++i)
+	int time = this->superviser_->_getCurrentTime();
+
+	for (int i = 0; i < n_devices_; ++i)
 	{
-		if (array_[i].getDone() == time) 
+		if (array_[i]._getDone() == time) 
 		{
-			superviser_->addPackage(array_[i]);
-			array_[i].reboot();
+			superviser_->_addPackage(&array_[i]);
+			array_[i]._reboot();
 		};
 	};
 
-	int f = this->capacity();
-	auto packages = buffer_->select(f);
+	int f = this->_capacity();
+	auto packages = buffer_ -> _sendPackages(f);
 
 	
 	if (packages.empty()) 
@@ -87,50 +70,39 @@ void Device::work()
 		return;
 	}
 
-	for (std::list<Package>::iterator package = packages.begin(); package != packages.end(); ++package)
+	for (std::list<Package>::iterator package = packages.begin(); package != packages.end(); package++)
 	{
 		//находим место. оно гарантированное есть, мы взяли столько сколько смогли
-		this->find();
+		this->_find();
 		
 		array_[current_] = *package;
-		array_[current_].setArrivedDevice(time);
-		array_[current_].setDone(time + this->fx());
+		array_[current_]._setArrivedDevice(time);
+		array_[current_]._setDone(time + this->_fx());
 		
 		//добавляем время
-		this->superviser_ -> addEvent(array_[current_].getDone());
+		this->superviser_ -> _addEvent(array_[current_]._getDone());
 
-		inc();
+		_inc();
 	}
 };
 
 
 //fx
-float Device::fx()
+float Device::_fx()
 {
 	return (-1.0 / this->l_*log(rand()/(double)RAND_MAX));
 };
 
-void Device::setConstant(float l) 
-{
-	this->l_ = l;
-}
-
-
 //состояние
-int Device::capacity()
+int Device::_capacity()
 {
 	int count = 0;
-	for (int i = 0; i < N_; i++)
+	for (int i = 0; i < n_devices_; i++)
 	{
-		if (!array_[i].isActive()) 
+		if (!array_[i]._isActive()) 
 		{
 			count++;
 		}
 	}
 	return count;
-};
-
-bool Device::done() 
-{
-	return (this->capacity() == N_)?true:false;
 };

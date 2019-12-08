@@ -20,12 +20,11 @@ void Auto::init() {
 }
 
 void Auto::reboot() {
-    this -> parent_ -> reboot();
+    this -> parent_ -> getEngine() -> _reboot();
     prob_       -> setText(QString::fromStdString("drop prob: _"));
-    wait_     -> setText(QString::fromStdString("average wait: _"));
+    wait_       -> setText(QString::fromStdString("average wait: _"));
     device_     -> setText(QString::fromStdString("average device: _"));
     system_     -> setText(QString::fromStdString("average system: _"));
-
 }
 
 void Auto::initializeButtons() {
@@ -73,7 +72,7 @@ void Auto::initializeForm() {
 }
 
 void Auto::start() {
-    auto run = this -> parent_ -> getAPI() -> run();
+    auto run = this -> parent_ -> getEngine() -> _auto();
 
     // prob_ -> setText(QString::fromStdString("drop prob: " +
     //     std::to_string(run.getDroppProbability().at(0))

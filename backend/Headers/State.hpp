@@ -1,5 +1,5 @@
-#ifndef ITERATION_HPP
-#define ITERATION_HPP
+#ifndef STATE_HPP
+#define STATE_HPP
 
 #include <vector>
 
@@ -10,10 +10,10 @@ public:
                 std::vector<float> average_spend_on_device, 
                 std::vector<float> average_spend_in_system);
 
-    std::vector<float> getDroppProbability();
-    std::vector<float> getAverageWaitTime();
-    std::vector<float> getAverageDeviceTime();
-    std::vector<float> getAverageInSystem();
+    std::vector<float> _getDroppProbability();
+    std::vector<float> _getAverageWaitTime();
+    std::vector<float> _getAverageDeviceTime();
+    std::vector<float> _getAverageInSystem();
 
 private:
     std::vector<float> average_probability_of_failure_;

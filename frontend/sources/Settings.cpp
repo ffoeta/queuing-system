@@ -63,7 +63,7 @@ void Settings::save() {
     double b = this->lineEdits[5]->text().toDouble();
     double l = this->lineEdits[6]->text().toDouble();
 
-    this -> parent_ -> setAPI(n_soruces, n_buffers, n_devices, n_requests, a, b, l);
+    this -> parent_ -> rebootEngine();
 }
 
 void Settings::set() {
