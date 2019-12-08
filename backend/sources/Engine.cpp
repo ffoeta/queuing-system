@@ -1,5 +1,4 @@
 #include "../headers/Engine.hpp"
-#include <iostream>
 #include <numeric>
 
 
@@ -44,31 +43,52 @@ void Engine::_reboot(int n_sources, int n_buffers, int n_devices, int n_requests
 
 
 //исполнение программы
-State Engine::_auto()
+void Engine::_auto()
 {
 	while (!superviser_ -> _over()) 
 	{
-		source_ -> _work();
-		device_ -> _work();
+		source_ 			-> 	_collect();
+		source_ 			-> 	_produce();
 
-		superviser_ -> _next();
+		device_ 			-> 	_exec();
+		device_ 			-> 	_request();
+
+		source_ 			-> 	_picture();
+		buffer_				->	_picture();
+		device_ 			-> 	_picture();
+
+		superviser_ 		-> 	_next();
 	}
-
-	return superviser_  -> _sample();
 }
 
-State Engine::_manual()
+void Engine::_manual()
 {
 	if (!superviser_ -> _over())
 	{
-		source_ 			-> _work();
-		device_ 			-> _work();
-		superviser_ 		-> _next();
+		source_ 			-> 	_collect();
+		source_ 			-> 	_produce();
+
+		device_ 			-> 	_exec();
+		device_ 			-> 	_request();
+
+		source_ 			-> 	_picture();
+		buffer_				->	_picture();
+		device_ 			-> 	_picture();
+
+		superviser_ 		-> 	_next();
 	}
-	
+}
+
+
+State	Engine::_state()
+{
 	return	superviser_ -> _sample();
 }
 
+Picture	Engine::_picture()
+{
+	return	superviser_ -> _picture();
+}
 
 //состояние
 int Engine::_getNSources()

@@ -1,29 +1,30 @@
 #include "../headers/Device.hpp"
+#include <iostream>
 
-//конструктор деструктор
+//конструктор 
 Device::Device(Superviser * superviser, Buffer * buffer, int n_devices, float l) :
-	superviser_(superviser), buffer_(buffer), n_devices_(n_devices), l_(l), array_(new Package[n_devices_]), current_(0)
-	{};
+	superviser_(superviser), buffer_(buffer), n_devices_(n_devices), l_(l), current_(0)
+	{
+		device_packages_ = new Package[n_devices_];
+	};
 
 
 // управление через current_
-void Device::_find() 
+void Device::_findPlaceForNewPackage()
 {
-	if (!array_[current_]._isActive()) 
+	if (!device_packages_[current_]._isActive()) 
 	{
 		return;
 	}
-
-	int temp = current_;
-
-	do{
+	int origin = this -> current_;
+	do {
 		_inc();
-	} while ( (array_[current_]._isActive()) && (current_ != temp) );
-};
+	} while((this->current_ != origin) && (device_packages_[this -> current_]._isActive()));
+}
 
 void Device::_inc() 
 {
-	if (current_ + 1 == n_devices_) 
+	if (current_ + 1 == n_devices_)
 	{
 		current_ = 0;
 	} else 
@@ -43,48 +44,57 @@ void Device::_dec()
 	}
 }
 
-//отработать цикл
-void Device::_work() 
+
+void Device::_request()
 {
-	if (this->superviser_->_over()) return;
+	int packages_requested = this->_free();
 
-	int time = this->superviser_->_getCurrentTime();
-
-	for (int i = 0; i < n_devices_; ++i)
+	if (packages_requested == 0) 
 	{
-		if (array_[i]._getDone() == time) 
-		{
-			superviser_->_addPackage(&array_[i]);
-			array_[i]._reboot();
-		};
-	};
-
-	int f = this->_capacity();
-	auto packages = buffer_ -> _sendPackages(f);
-
-	
-	if (packages.empty()) 
-	{
-		// std::cout << "empty:" << std::endl;
-		// std::cout << packages.size()<< std::endl;
 		return;
 	}
 
-	for (std::list<Package>::iterator package = packages.begin(); package != packages.end(); package++)
-	{
-		//находим место. оно гарантированное есть, мы взяли столько сколько смогли
-		this->_find();
-		
-		array_[current_] = *package;
-		array_[current_]._setArrivedDevice(time);
-		array_[current_]._setDone(time + this->_fx());
-		
-		//добавляем время
-		this->superviser_ -> _addEvent(array_[current_]._getDone());
+	auto buffer_response = this -> buffer_ ->_sendPackages(packages_requested);
 
-		_inc();
+	if (buffer_response.empty())
+	{
+		return;
 	}
-};
+
+	int time = this -> superviser_ -> _getCurrentTime();
+
+	for (int i = 0; i < buffer_response.size(); i++)
+	{
+		this -> _findPlaceForNewPackage();
+
+		device_packages_[current_] = buffer_response.front();
+
+		buffer_response.pop_front();
+
+		device_packages_[current_]._setArrivedDevice(time);
+		device_packages_[current_]._setDone(time + this -> _fx());
+
+		this->superviser_ -> _addEvent(device_packages_[current_]._getDone());
+	}
+	this -> superviser_ -> _addDevicePicture(this -> device_packages_);
+}
+
+void Device::_exec()
+{
+	float time = this -> superviser_ -> _getCurrentTime();
+	for (int i = 0; i <n_devices_; i++ )
+	{
+		if (device_packages_[i]._isActive()) 
+		{
+			if (device_packages_[i]._getDone() == time)
+			{
+				this -> superviser_ -> _addPackage(&device_packages_[i]);
+				this -> device_packages_[i]._reboot();
+				_inc();
+			}
+		}
+	}
+}
 
 
 //fx
@@ -94,12 +104,17 @@ float Device::_fx()
 };
 
 //состояние
-int Device::_capacity()
+void Device::_picture()
+{
+	this -> superviser_ -> _addDevicePicture(this -> device_packages_);
+}
+
+int Device::_free()
 {
 	int count = 0;
 	for (int i = 0; i < n_devices_; i++)
 	{
-		if (!array_[i]._isActive()) 
+		if (!device_packages_[i]._isActive()) 
 		{
 			count++;
 		}

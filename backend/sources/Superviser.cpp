@@ -1,18 +1,23 @@
 #include "../headers/Superviser.hpp"
 #include <iostream>
 #include <numeric>
+#include <algorithm>
 
 //конструктор
 Superviser::Superviser(int n_sources, int n_buffers, int n_devices, int n_requests) :
 	n_requests_(n_requests), n_sources_(n_sources), n_buffers_(n_buffers), 
 	n_devices_(n_devices), current_(0), total_packages_(0), time_(0)
 {
-	generated_request_per_source_   = new int[n_sources]; 
-    dropped_request_per_source_     = new int[n_sources];
+	generated_request_per_source_   =   new int[n_sources]; 
+    dropped_request_per_source_     =   new int[n_sources];
 
-    waited_on_buffer_per_source_    =  new std::vector<float>[n_sources]; 
-    spend_on_device_                =  new std::vector<float>[n_sources];
-    spend_in_system_                =  new std::vector<float>[n_sources];
+    waited_on_buffer_per_source_    =   new std::vector<float>[n_sources]; 
+    spend_on_device_                =   new std::vector<float>[n_sources];
+    spend_in_system_                =   new std::vector<float>[n_sources];
+
+    source_picture_    				=   new std::vector<int>[n_sources];
+	buffer_picture_				    =   new std::vector<int>[n_buffers];
+	device_picture_				    =   new std::vector<int>[n_devices];
 }
 
 //текущее время в системе
@@ -24,7 +29,6 @@ float Superviser::_getCurrentTime()
 //добавить событие
 void Superviser::_addEvent(float time) 
 {
-	std::cout << time << " added." << std::endl;
 	this->time_.push_back(time);
 }
 
@@ -41,31 +45,22 @@ void Superviser::_next()
 	this->time_.sort();
 	this->current_ = this->time_.front();
 	this->time_.pop_front();
-
-    std::cout << "time is " << current_ << " ";
-	for (auto it = time_.begin(); it != time_.end(); it++)
-	{
-		std::cout << *it << " ";
-	}
-	std::cout << "." << std::endl;
 };
 
 bool Superviser::_over()
-{
-    std::cout << "xxxxxx "<<total_packages_ << std::endl;
+{   
 	return (total_packages_ < n_requests_)?false:true;
 };
 
 //зарегистрировать пакеты
 void Superviser::_addPackage(Package * package) 
 {
-    int   n                 =   package -> _getNofSource();
+    int   n                 =   package -> _getNofSource() - 1;
     float arrived_buffer    =   package -> _getArrivedBuffer();
     float arrived_device    =   package -> _getArrivedDevice();
     float done              =   package -> _getDone();
 
     this -> generated_request_per_source_[n]++;
-
     this -> waited_on_buffer_per_source_[n].push_back(arrived_device - arrived_buffer);
     this -> spend_on_device_[n].push_back(done - arrived_device);
     this -> spend_in_system_[n].push_back(done - arrived_buffer);
@@ -73,7 +68,7 @@ void Superviser::_addPackage(Package * package)
 
 void Superviser::_droppPackage(Package * package) 
 {
-    int n = package -> _getNofSource();
+    int n = package -> _getNofSource() - 1;
     this -> dropped_request_per_source_[n]++;
 }
 
@@ -114,6 +109,54 @@ float Superviser::_getAverageSpendInSystem(int i)
 }
 
 
+void 	Superviser::_addSourcePicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_sources_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    source_picture_ -> swap(temp);
+}
+
+void 	Superviser::_addBufferPicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_buffers_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    buffer_picture_ -> swap(temp);
+}
+
+void 	Superviser::_addDevicePicture(Package  *  array)
+{
+    std::vector<int> temp;
+    for (int i = 0; i < n_sources_; i++)
+    {
+        if (array[i]._isActive())
+        {
+            temp.push_back(array[i]._getNofSource());
+        } else 
+        {
+            temp.push_back(-1);
+        }
+    }
+    device_picture_ -> swap(temp);
+}
+
 //генерация статистики
 State Superviser::_sample() 
 {
@@ -133,4 +176,11 @@ State Superviser::_sample()
 
     return State(average_probability_of_failure, average_waited_on_buffer_per_source,
         average_spend_on_device, average_spend_in_system);
+}
+
+
+
+Picture	Superviser::_picture()
+{
+    return Picture(source_picture_, buffer_picture_, device_picture_);
 }

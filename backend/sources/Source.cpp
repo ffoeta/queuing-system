@@ -5,47 +5,52 @@ Source::Source(Superviser * superviser, Buffer * buffer, int n_sources, float a,
 	superviser_(superviser), buffer_(buffer), n_sources_(n_sources), 
 	a_(a), b_(b)
 	{
-		array_ = new Package[n_sources];
+		source_packages_ = new Package[n_sources];
 	}
 
 //отработать цикл
-void Source::_work()
+
+void Source::_produce() 
 {
-	float time = superviser_->_getCurrentTime();
+	float time = this -> superviser_ -> _getCurrentTime();
 
-	if (this->superviser_->_over()) return;
-
-	for (int i = 0; i < n_sources_; i++) 
+	for (int i = 0; i < n_sources_; i++)
 	{
-		if (!array_[i]._isActive()) 
+		if (!source_packages_[i]._isActive())
 		{
-			continue;
-		}
-		if (array_[i]._getArrivedBuffer() == time) 
-		{
-			//добавили в счетчик и отправили
-			std::cout << "source time is " << time << " package " << array_[i]._getNofSource() << " sent." << std::endl;
-			this->superviser_ -> _addGenerated();
-			this->buffer_ -> _recievePackage(array_[i]);
-
-			//обнулили
-			array_[i]._reboot();
-		}
-	}
-
-	for (int i = 0; i < n_sources_; i++) 
-	{
-		if (!array_[i]._isActive()) 
-		{	
 			//активировали
-			array_[i]._activate(i+1, time + this->_fx());
+			source_packages_[i]._activate(i+1, time + this->_fx());
 
-			//	добавили время
-			std::cout << "for source "<< array_[i]._getNofSource() << " ";
-			this->superviser_->_addEvent(array_[i]._getArrivedBuffer());
+			//	добавили время в очередь
+			this->superviser_->_addEvent(source_packages_[i]._getArrivedBuffer());
 		}
 	}
 }
+
+void Source::_collect()
+{
+	float time = this -> superviser_ -> _getCurrentTime();
+
+	// std:: cout << << std::endl;
+
+	for (int i = 0; i < n_sources_; i++) 
+	{
+		if (source_packages_[i]._isActive())
+		{
+			if (source_packages_[i]._getArrivedBuffer() == time) 
+			{
+				//добавили в счетчик и отправили
+				this->superviser_ -> _addGenerated();
+				this->buffer_ -> _recievePackage(source_packages_[i]);
+
+				//обнулили
+				source_packages_[i]._reboot();
+			}
+
+		} 
+	}
+}
+
 
 //fx
 float Source::_fx()
@@ -54,19 +59,7 @@ float Source::_fx()
 }
 
 //состояние
-int Source::_free()
+void Source::_picture()
 {
-	
-	int count = 0;
-
-	for (int i = 0; i < n_sources_; ++i) 
-	{
-		if (!array_[i]._isActive()) 
-		{
-			count++;
-		}
-	};
-	
-	return count;
-
+	this -> superviser_ -> _addSourcePicture(this -> source_packages_);
 };

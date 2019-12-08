@@ -1,5 +1,5 @@
 #include "../headers/Manual.hpp"
-
+#include <iostream>
 
 Manual::Manual(Interface * parent) :
     parent_(parent)
@@ -37,10 +37,16 @@ Manual::Manual(Interface * parent) :
 }
 
 void Manual::step()
-{
-    label_->setText(QString::fromStdString(
-        std::to_string(this -> parent_ -> getEngine() -> _manual()._getDroppProbability().at(0)  )
-    ));
+{   
+    this -> parent_ -> getEngine() -> _manual();
+
+    auto source_picture = this -> parent_ -> getEngine() -> _picture().getSourcePicture();
+    auto buffer_picture = this -> parent_ -> getEngine() -> _picture().getBufferPicture();
+    auto device_picture = this -> parent_ -> getEngine() -> _picture().getDevicePicture();
+
+    std::cout << "source: " << source_picture.at(0) << source_picture.at(1) << source_picture.at(2)  << std::endl;
+    std::cout << "buffer: " << buffer_picture.at(0) << buffer_picture.at(1) << buffer_picture.at(2)  << std::endl;
+    std::cout << "device: " << device_picture.at(0) << device_picture.at(1) << device_picture.at(2)  << std::endl;
 }
 
 void Manual::reboot()

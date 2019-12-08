@@ -16,8 +16,11 @@ public:
 	void 		_reboot();
 	void 		_reboot(int n_requests, int n_sources, int n_buffers, int n_devices, float a, float b, float l);
 	//исполнение программы
-	State  		_auto();
-	State	   	_manual();
+	void  		_auto();
+	void	   	_manual();
+
+	State		_state();
+	Picture		_picture();
 	//состояния
 	int 		_getNSources();
 	int 		_getNBuffers();

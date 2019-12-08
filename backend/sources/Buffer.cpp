@@ -1,24 +1,23 @@
 #include "../headers/Buffer.hpp"
-#include <iostream>
+
 //конструктор деструктор
 Buffer::Buffer(Superviser * superviser, int n_buffers) : 
  	superviser_(superviser), n_buffers_(n_buffers), current_(0)
 	{
-		array_ = new Package[n_buffers];
+		this -> buffer_packages_ = new Package[n_buffers];
 	}
 
 //принять посылку
 void Buffer::_recievePackage(Package package) 
 {
-	this->_find();
+	this->_findPlaceToInsertPackage();
 
-	if (array_[current_]._isActive()) 
+	if (buffer_packages_[current_]._isActive()) 
 	{
-		this -> superviser_ -> _droppPackage(&array_[current_]);
-		_dec();
+		this -> superviser_ -> _droppPackage(&buffer_packages_[current_]);
 	}
 		
-	array_[current_] = package;
+	buffer_packages_[current_] = package;
 
 	_inc();
 };
@@ -27,69 +26,81 @@ void Buffer::_recievePackage(Package package)
 //выбираем по заказу устройства f посылок из буфера
 std::list<Package> Buffer::_sendPackages(int f)
 {
-	std::list<Package> result(0);
+	int ready_to_give = this -> n_buffers_ - this -> _free();
+	int asked_for = f;
 
-	int r = 0;
+	std::list<Package> result;
 
-	for (int i = 0; i < f; ++i) 
+	if (ready_to_give == 0)
 	{
-		while(r != -1)
+		return result;
+	}
+
+	int let_take;
+
+	if (asked_for > ready_to_give)
+	{
+		let_take = ready_to_give;
+	} else if (asked_for <= ready_to_give)
+	{
+		let_take = asked_for;
+	};
+
+	for (int i = 0; i < let_take; i++) 
+	{
+		int k = this -> _chooseHighestPackagePrior();
+		while (!buffer_packages_[current_]._isActive() && (buffer_packages_[current_]._getNofSource() != k))
 		{
-			r = this->_choose();
-
-			if (r != -1)
-			{
-				result.push_back(array_[r]);
-				array_[r]._reboot();
-			};
-
-		};
+			_inc();
+		}
+		result.push_back(buffer_packages_[current_]);
 	};
 	return result;
 };
 
 
 //поиск и управление через current_
-void Buffer::_find() 
+void Buffer::_findPlaceToInsertPackage() 
 {
-	if (!array_[current_]._isActive()) 
+	if (!buffer_packages_[current_]._isActive()) 
 	{
 		return;
 	}
-	int temp = current_;
+	int origin = current_;
 	do{
 		_inc();
-	} while ( (array_[current_]._isActive()) && (current_ != temp) );
+	} while  ((current_ != origin) && (buffer_packages_[current_]._isActive()));
 };
 
-
-int Buffer::_choose() 
+int Buffer::_chooseHighestPackagePrior() 
 {
-	if (this->_done()) 
+	std::vector<float> temp;
+
+	for (int i = 0; i < n_buffers_; ++i)
+	{
+		if (buffer_packages_[i]._isActive())
+		{
+			temp.push_back(buffer_packages_[i]._getNofSource());
+		}
+	}
+
+	if (temp.size() == 0)
 	{
 		return -1;
 	}
 
-	int value = RAND_MAX;
-	int k = -1;
-	int n = -1;
-
-	for (int i = 0; i < n_buffers_; ++i)
+	int index = 0;
+	int min = temp.at(0);
+	for (int i = 0; i < temp.size(); i++)
 	{
-		if (array_[i]._isActive()) 
+		if (temp[i] < min)
 		{
-			n = array_[i]._getNofSource();
-			
-			if (n < value) 
-			{
-				value = n;
-				k = i;
-			}
+			min = temp[i];
+			index = i;
 		}
-
 	}
 
-	return k;
+	return min;
 };
 
 
@@ -117,13 +128,18 @@ void Buffer::_dec()
 
 
 //состояние
-int Buffer::_capacity()
+void Buffer::_picture()
+{
+	this -> superviser_ -> _addBufferPicture(this -> buffer_packages_);
+}
+
+int Buffer::_free()
 {
 	int count = 0;
 
 	for (int i = 0; i < n_buffers_; ++i)
 	{
-		if (!array_[i]._isActive()) 
+		if (!buffer_packages_[i]._isActive()) 
 		{
 			count++;
 		};
@@ -134,5 +150,5 @@ int Buffer::_capacity()
 
 bool Buffer::_done() 
 {
-	return (this->_capacity() == n_buffers_)?true:false;
+	return (this->_free() == n_buffers_)?true:false;
 };

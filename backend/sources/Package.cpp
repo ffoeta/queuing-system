@@ -1,8 +1,7 @@
 #include "../headers/Package.hpp"
-#include <iostream>
 
 	Package::Package() :
-		n_of_source(0), arrived_on_buffer(0), arrived_on_device(0), done(0), dropped(0), active(false)
+		n_of_source(-1), arrived_on_buffer(-1), arrived_on_device(-1), done(-1), dropped(-1), active(false)
 	{};
 
 	//управление
@@ -26,11 +25,11 @@
 	{
 		this -> active = false;
 		
-		this -> n_of_source = 0;
-		this -> arrived_on_buffer = 0;
-		this -> arrived_on_device = 0;
-		this -> dropped = 0;
-		this -> done = 0;
+		this -> n_of_source = -1;
+		this -> arrived_on_buffer = -1;
+		this -> arrived_on_device = -1;
+		this -> dropped = -1;
+		this -> done = -1;
 	}
 
 	//геттеры

@@ -72,23 +72,29 @@ void Auto::initializeForm() {
 }
 
 void Auto::start() {
-    auto run = this -> parent_ -> getEngine() -> _auto();
 
-    // prob_ -> setText(QString::fromStdString("drop prob: " +
-    //     std::to_string(run.getDroppProbability().at(0))
-    // ));
+    this -> parent_ -> getEngine() -> _auto();
 
-    // wait_ -> setText(QString::fromStdString("average wait: " +
-    //     std::to_string(run.getAverageWaitTime().at(0))
-    // ));
+    auto data = this -> parent_ -> getEngine() -> _state();
 
-    // device_ -> setText(QString::fromStdString("average device: " +
-    //     std::to_string(run.getAverageDeviceTime().at(0))
-    // ));
+    std::cout << << std::endl;
 
-    // system_ -> setText(QString::fromStdString("average system: " +
-    //     std::to_string(run.getAverageInSystem().at(0))
-    // ));
+
+    prob_ -> setText(QString::fromStdString("drop prob: " +
+        std::to_string(data._getDroppProbability().at(0))
+    ));
+
+    wait_ -> setText(QString::fromStdString("average wait: " +
+        std::to_string(data._getAverageWaitTime().at(0))
+    ));
+
+    device_ -> setText(QString::fromStdString("average device: " +
+        std::to_string(data._getAverageDeviceTime().at(0))
+    ));
+
+    system_ -> setText(QString::fromStdString("average system: " +
+        std::to_string(data._getAverageInSystem().at(0))
+    ));
 }
 
 void Auto::goBack() {

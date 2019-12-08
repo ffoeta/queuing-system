@@ -12,16 +12,17 @@ public:
 	Source(Superviser * superviser, Buffer * buffer, int n_sources, float a, float b);
 
 	//отработать цикл
-	void 	_work();
+	void 	_collect();
+	void 	_produce();
 	//fx
 	float  	_fx();
 	//состояние
-	int 	_free();
+	void 	_picture();
 	bool 	_done();
 	
 private:
 	int 		n_sources_;
-	Package  *  array_;
+	Package  *  source_packages_;
 
 	float		a_;
 	float		b_;

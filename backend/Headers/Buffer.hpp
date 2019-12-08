@@ -17,20 +17,22 @@ public:
 	std::list<Package> 	_sendPackages(int f);
 
 	//поиск и управление через current_
-	void 				_find();
-	int 				_choose();
+	void 				_findPlaceToInsertPackage();
+	int 				_chooseHighestPackagePrior();
 	void 				_inc();
 	void 				_dec();
 
 	//состояние
+	void 				_picture();
 	int 				_capacity();
+	int					_free();
 	bool 				_done();
 
 private:
 
 	Superviser 	* 	superviser_;
 	int 			n_buffers_;	
-	Package  	*	array_;
+	Package  	*	buffer_packages_;
 	int 			current_;
 	
 };

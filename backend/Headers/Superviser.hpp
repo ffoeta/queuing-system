@@ -3,6 +3,8 @@
 
 #include <list>
 #include "Package.hpp"
+
+#include "Picture.hpp"
 #include "State.hpp"
 
 class Superviser {
@@ -27,7 +29,13 @@ public:
 	//состояние
 	void 		_next();
 	bool 		_over();
+
+	void 		_addSourcePicture(Package  *  array);
+	void 		_addBufferPicture(Package  *  array);
+	void 		_addDevicePicture(Package  *  array);
+
 	State 		_sample();
+	Picture		_picture();
 
 
 
@@ -50,9 +58,14 @@ private:
 
 	int 							* 		generated_request_per_source_;
 	int 							* 		dropped_request_per_source_;
+
     std::vector<float>	 			* 		waited_on_buffer_per_source_;
 	std::vector<float>				* 		spend_on_device_;
     std::vector<float>				* 		spend_in_system_;
+
+	std::vector<int>				*		source_picture_;
+	std::vector<int>				*		buffer_picture_;
+	std::vector<int>				*		device_picture_;
 
 
 };
