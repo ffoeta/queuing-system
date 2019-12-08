@@ -10,7 +10,6 @@ Interface::Interface()
 {
     //Апи
     engine = new Engine();
-    engine -> _reboot(3,3,3,10000,0,1,3);
 
     // окна
     autoWidget = new Auto(this);
