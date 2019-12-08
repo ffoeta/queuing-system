@@ -31,8 +31,6 @@ void Source::_collect()
 {
 	float time = this -> superviser_ -> _getCurrentTime();
 
-	// std:: cout << << std::endl;
-
 	for (int i = 0; i < n_sources_; i++) 
 	{
 		if (source_packages_[i]._isActive())
